@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paddle Controller</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        .button-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 10px 0;
+            gap: 20px;
+        }
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+	    width: 170px; /* Set the width to a consistent value */
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .value-display {
+            margin-top: 5px;
+            font-size: 14px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Paddle Controller</h1>
+    <button id="connect-btn">Connect</button>
+
+    <div class="button-group">
+        <div class="button-container">
+            <button id="fsr-btn" disabled>Grip Unk</button>
+            <div id="fsr-value" class="value-display">FSR: --</div>
+        </div>
+        <div class="button-container">
+            <button id="xangle-btn" disabled>Xangle Unk</button>
+            <div id="xangle-value" class="value-display">Xangle: --</div>
+        </div>
+    </div>
+
+    <script>
+        let device;
+        let server;
+        let uartService;
+        let txCharacteristic;
+        let rxCharacteristic;
+        let isConnected = false;
+
+        const SERVICE_UUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
+        const TX_CHAR_UUID = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
+        const RX_CHAR_UUID = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
+
+        const connectBtn = document.getElementById('connect-btn');
+        const fsrBtn = document.getElementById('fsr-btn');
+        const fsrValue = document.getElementById('fsr-value');
+        const xangleBtn = document.getElementById('xangle-btn');
+        const xangleValue = document.getElementById('xangle-value');
+
+        async function connect() {
+            try {
+                if (!isConnected) {
+                    console.log('Requesting Bluetooth device...');
+                    device = await navigator.bluetooth.requestDevice({
+                        filters: [{ services: [SERVICE_UUID] }]
+                    });
+
+                    console.log('Connecting to GATT server...');
+                    server = await device.gatt.connect();
+
+                    console.log('Getting UART service...');
+                    uartService = await server.getPrimaryService(SERVICE_UUID);
+
+                    console.log('Getting TX and RX characteristics...');
+                    txCharacteristic = await uartService.getCharacteristic(TX_CHAR_UUID);
+                    rxCharacteristic = await uartService.getCharacteristic(RX_CHAR_UUID);
+
+                    console.log('Starting notifications...');
+                    await rxCharacteristic.startNotifications();
+                    rxCharacteristic.addEventListener('characteristicvaluechanged', handleNotifications);
+
+                    // Update UI on successful connection
+                    console.log('Connected successfully.');
+                    isConnected = true;
+                    connectBtn.textContent = 'Disconnect';
+                    fsrBtn.disabled = false;
+                    xangleBtn.disabled = false;
+
+                    // Query initial statuses
+                    console.log('Querying initial statuses...');
+                    await Promise.all([getFSRStatus(), getXangleStatus()]);
+                } else {
+                    // Disconnect from the device
+                    console.log('Disconnecting from Bluetooth device...');
+                    if (device && device.gatt.connected) {
+                        await device.gatt.disconnect();
+                    }
+                    isConnected = false;
+                    connectBtn.textContent = 'Connect';
+                    fsrBtn.disabled = true;
+                    xangleBtn.disabled = true;
+                    fsrBtn.textContent = 'Grip Unk';
+                    xangleBtn.textContent = 'Xangle Unk';
+                    fsrValue.textContent = 'FSR: --';
+                    xangleValue.textContent = 'Xangle: --';
+                }
+            } catch (error) {
+                console.error('Bluetooth connection failed:', error);
+                alert('Failed to connect. Please ensure the device is powered on and in pairing mode.');
+            }
+        }
+
+        async function toggleFSR() {
+            if (!txCharacteristic) {
+                alert('Not connected to paddle!');
+                return;
+            }
+            try {
+                const command = 'TOGGLE_FSR\n';
+                await txCharacteristic.writeValue(new TextEncoder().encode(command));
+            } catch (error) {
+                console.error('Error toggling FSR:', error);
+            }
+        }
+
+        async function getFSRStatus() {
+            if (!txCharacteristic) return;
+            try {
+                const command = 'GET_FSR\n';
+                await txCharacteristic.writeValue(new TextEncoder().encode(command));
+            } catch (error) {
+                console.error('Error sending GET_FSR command:', error);
+            }
+        }
+
+        async function toggleXangle() {
+            if (!txCharacteristic) {
+		alert('Not connected to paddle!');
+		return;
+	    }
+            try {
+                const command = 'TOGGLE_XANGLE\n';
+                await txCharacteristic.writeValue(new TextEncoder().encode(command));
+            } catch (error) {
+                console.error('Error toggling Xangle:', error);
+            }
+        }
+
+        async function getXangleStatus() {
+            if (!txCharacteristic) return;
+            try {
+                const command = 'GET_XANGLE\n';
+                await txCharacteristic.writeValue(new TextEncoder().encode(command));
+            } catch (error) {
+                console.error('Error sending GET_XANGLE command:', error);
+            }
+        }
+
+        function handleNotifications(event) {
+            const value = new TextDecoder().decode(event.target.value).trim();
+            console.log(`Received: ${value}`);
+
+            if (value.includes('FSR ENABLED')) {
+                fsrBtn.textContent = 'Turn Grip Off';
+            } else if (value.includes('FSR DISABLED')) {
+                fsrBtn.textContent = 'Turn Grip On';
+	    } else if (value.startsWith('FSR:')) {
+                fsrValue.textContent = value;
+            } else if (value.includes('XANGLE ENABLED')) {
+                xangleBtn.textContent = 'Turn Xangle Off';
+            } else if (value.includes('XANGLE DISABLED')) {
+                xangleBtn.textContent = 'Turn Xangle On';
+            } else if (value.startsWith('XANGLE:')) {
+                xangleValue.textContent = value;
+            } else {
+                console.log(`Unrecognized message: ${value}`);
+            }
+        }
+
+        connectBtn.addEventListener('click', connect);
+        fsrBtn.addEventListener('click', toggleFSR);
+        xangleBtn.addEventListener('click', toggleXangle);
+    </script>
+</body>
+</html>
