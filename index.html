@@ -54,7 +54,7 @@
     <div class="button-group">
         <div class="button-container">
             <button id="fsr-btn" disabled>Grip Unk</button>
-            <div id="fsr-value" class="value-display">FSR: --</div>
+            <div id="fsr-value" class="value-display">FSR: -- Step: --</div>
         </div>
         <div class="button-container">
             <button id="xangle-btn" disabled>Xangle Unk</button>
@@ -179,27 +179,36 @@
             }
         }
 
+        let currentFSR = '--';
+        let currentStep = '--';
+
         function handleNotifications(event) {
             const value = new TextDecoder().decode(event.target.value).trim();
             console.log(`Received: ${value}`);
 
-            if (value.includes('FSR ENABLED')) {
-                fsrBtn.textContent = 'Turn Grip Off';
-            } else if (value.includes('FSR DISABLED')) {
-                fsrBtn.textContent = 'Turn Grip On';
-	    } else if (value.startsWith('FSR:')) {
-                fsrValue.textContent = value;
-            } else if (value.includes('XANGLE ENABLED')) {
-                xangleBtn.textContent = 'Turn Xangle Off';
-            } else if (value.includes('XANGLE DISABLED')) {
-                xangleBtn.textContent = 'Turn Xangle On';
-            } else if (value.startsWith('XANGLE:')) {
-                xangleValue.textContent = value;
-            } else {
-                console.log(`Unrecognized message: ${value}`);
-            }
+         if (value.includes('FSR ENABLED')) {
+            fsrBtn.textContent = 'Turn Grip Off';
+        } else if (value.includes('FSR DISABLED')) {
+            fsrBtn.textContent = 'Turn Grip On';
+        } else if (value.startsWith('FSR:')) {
+            // Update current FSR value
+            currentFSR = value.split(':')[1].trim();
+            fsrValue.textContent = `FSR: ${currentFSR} Step: ${currentStep}`;
+        } else if (value.startsWith('STEP:')) {
+            // Update current Step value
+            currentStep = value.split(':')[1].trim();
+            fsrValue.textContent = `FSR: ${currentFSR} Step: ${currentStep}`;
+        } else if (value.includes('XANGLE ENABLED')) {
+            xangleBtn.textContent = 'Turn Xangle Off';
+        } else if (value.includes('XANGLE DISABLED')) {
+            xangleBtn.textContent = 'Turn Xangle On';
+        } else if (value.startsWith('XANGLE:')) {
+            // Update the Xangle display
+            xangleValue.textContent = value.split(':')[1].trim();
+        } else {
+            console.log(`Unrecognized message: ${value}`);
         }
-
+    }
         connectBtn.addEventListener('click', connect);
         fsrBtn.addEventListener('click', toggleFSR);
         xangleBtn.addEventListener('click', toggleXangle);
