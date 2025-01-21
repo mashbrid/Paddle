@@ -1,28 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paddle Controller</title>
-    <style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paddle Controller</title>
+  <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            margin: 20px;
+            margin: 10px;
         }
-        .button-group {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 10px 0;
-            gap: 20px;
-        }
-        .button-container {
+        .main-container {
             display: flex;
             flex-direction: column;
             align-items: center;
         }
+        #connect-btn {
+            margin-bottom: 20px;
+        }
+        .columns {
+            display: flex;
+            justify-content: center;
+            gap: 40px; /* Space between the two columns */
+        }
+        .column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .button-group {
+            display: flex;
+            flex-wrap: wrap; /* Allow buttons to wrap if needed */
+            justify-content: center; /* Center the buttons */
+            gap: 10px; /* Space between buttons */
+            margin-top: 10px; /* Optional margin for spacing */
+        }
         button {
+            min-width: 150px; /* Ensure consistent button size */
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
@@ -31,7 +45,9 @@
             border: none;
             border-radius: 5px;
             transition: background-color 0.3s ease;
-	    width: 170px; /* Set the width to a consistent value */
+            text-align: center; /* Prevent text wrapping */
+            white-space: nowrap; /* Prevent text wrapping */
+            margin-bottom: 3px; /* Space between buttons */
         }
         button:hover {
             background-color: #0056b3;
@@ -40,178 +56,101 @@
             background-color: #cccccc;
             cursor: not-allowed;
         }
+        .adjust-button {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            width: 150px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .adjust-button:hover {
+            background-color: #0056b3;
+        }
+        .adjust-button span {
+            flex: 1;
+            text-align: center;
+        }
+        .adjust-button .minus, .adjust-button .plus {
+            font-weight: bold;
+            padding: 0 5px;
+            cursor: pointer;
+        }
         .value-display {
-            margin-top: 5px;
             font-size: 14px;
             color: #333;
         }
-    </style>
+  </style>
 </head>
 <body>
-    <h1>Paddle Controller</h1>
-    <button id="connect-btn">Connect</button>
-
-    <div class="button-group">
-        <div class="button-container">
-            <button id="fsr-btn" disabled>Grip Unk</button>
-            <div id="fsr-value" class="value-display">FSR: -- Step: --</div>
-        </div>
-        <div class="button-container">
-            <button id="xangle-btn" disabled>Xangle Unk</button>
-            <div id="xangle-value" class="value-display">Xangle: --</div>
-        </div>
+  <div class="main-container">
+    <h1>Paddle Controller</h1><button id="connect-btn">Connect</button>
+    <div class="columns">
+      <div class="column">
+        <button id="fsr-btn" disabled>Grip Unk</button>
+        <div id="fsr-value" class="value-display">
+          FSR: -- Step: --
+        </div><button class="adjust-button" id="step1-btn"><span class="minus" onclick="adjustStep('step1', -10)">-</span> <span>Step 1: <span id="step1-value">0</span></span> <span class="plus" onclick="adjustStep('step1', 10)">+</span></button> <button class="adjust-button" id="step2-btn"><span class="minus" onclick="adjustStep('step2', -10)">-</span> <span>Step 2: <span id="step2-value">0</span></span> <span class="plus" onclick="adjustStep('step2', 10)">+</span></button> <button class="adjust-button" id="step3-btn"><span class="minus" onclick="adjustStep('step3', -10)">-</span> <span>Step 3: <span id="step3-value">0</span></span> <span class="plus" onclick="adjustStep('step3', 10)">+</span></button> <button class="adjust-button" id="step4-btn"><span class="minus" onclick="adjustStep('step4', -10)">-</span> <span>Step 4: <span id="step4-value">0</span></span> <span class="plus" onclick="adjustStep('step4', 10)">+</span></button> <button class="adjust-button" id="step5-btn"><span class="minus" onclick="adjustStep('step5', -10)">-</span> <span>Step 5: <span id="step5-value">0</span></span> <span class="plus" onclick="adjustStep('step5', 10)">+</span></button> <button class="adjust-button" id="step6-btn"><span class="minus" onclick="adjustStep('step6', -10)">-</span> <span>Step 6: <span id="step6-value">0</span></span> <span class="plus" onclick="adjustStep('step6', 10)">+</span></button> <button class="adjust-button" id="step7-btn"><span class="minus" onclick="adjustStep('step7', -10)">-</span> <span>Step 7: <span id="step7-value">0</span></span> <span class="plus" onclick="adjustStep('step7', 10)">+</span></button> <button class="adjust-button" id="step8-btn"><span class="minus" onclick="adjustStep('step8', -10)">-</span> <span>Step 8: <span id="step8-value">0</span></span> <span class="plus" onclick="adjustStep('step8', 10)">+</span></button> <button class="adjust-button" id="step9-btn"><span class="minus" onclick="adjustStep('step9', -10)">-</span> <span>Step 9: <span id="step9-value">0</span></span> <span class="plus" onclick="adjustStep('step9', 10)">+</span></button> <button class="adjust-button" id="step10-btn"><span class="minus" onclick="adjustStep('step10', -10)">-</span> <span>Step 10: <span id="step10-value">0</span></span> <span class="plus" onclick="adjustStep('step10', 10)">+</span></button>
+      </div>
+      <div class="column">
+        <button id="xangle-btn" disabled>X Angle Unk</button>
+        <div id="xangle-value" class="value-display">
+          X Angle: --
+        </div><button class="adjust-button" id="xangle-adjust-btn"><span class="minus" onclick="adjustXAngle(-0.5)">-</span> <span>X Angle: <span id="xangle-adjust-value">-3.0</span></span> <span class="plus" onclick="adjustXAngle(0.5)">+</span></button> <button class="adjust-button" id="xhaptic-btn"><span class="minus" onclick="adjustXHaptic(-10)">-</span> <span>X Haptic: <span id="xhaptic-value">50</span>%</span> <span class="plus" onclick="adjustXHaptic(10)">+</span></button>
+      </div>
     </div>
-
-    <script>
+  </div>
+  <script>
         let device;
         let server;
         let uartService;
         let txCharacteristic;
         let rxCharacteristic;
         let isConnected = false;
+        let xAngleThreshold = -3.0; // Default X Angle threshold value
+        let xHapticIntensity = 50; // Default X Haptic intensity value
 
-        const SERVICE_UUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
-        const TX_CHAR_UUID = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
-        const RX_CHAR_UUID = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
+        const steps = {
+            step1: 0,
+            step2: 0,
+            step3: 0,
+            step4: 0,
+            step5: 0,
+            step6: 0,
+            step7: 0,
+            step8: 0,
+            step9: 0,
+            step10: 0
+        };
 
-        const connectBtn = document.getElementById('connect-btn');
-        const fsrBtn = document.getElementById('fsr-btn');
-        const fsrValue = document.getElementById('fsr-value');
-        const xangleBtn = document.getElementById('xangle-btn');
-        const xangleValue = document.getElementById('xangle-value');
+        // Adjust step value function
+        function adjustStep(step, increment) {
+            const min = 0;
+            const max = 100;
 
-        async function connect() {
-            try {
-                if (!isConnected) {
-                    console.log('Requesting Bluetooth device...');
-                    device = await navigator.bluetooth.requestDevice({
-                        filters: [{ services: [SERVICE_UUID] }]
-                    });
-
-                    console.log('Connecting to GATT server...');
-                    server = await device.gatt.connect();
-
-                    console.log('Getting UART service...');
-                    uartService = await server.getPrimaryService(SERVICE_UUID);
-
-                    console.log('Getting TX and RX characteristics...');
-                    txCharacteristic = await uartService.getCharacteristic(TX_CHAR_UUID);
-                    rxCharacteristic = await uartService.getCharacteristic(RX_CHAR_UUID);
-
-                    console.log('Starting notifications...');
-                    await rxCharacteristic.startNotifications();
-                    rxCharacteristic.addEventListener('characteristicvaluechanged', handleNotifications);
-
-                    // Update UI on successful connection
-                    console.log('Connected successfully.');
-                    isConnected = true;
-                    connectBtn.textContent = 'Disconnect';
-                    fsrBtn.disabled = false;
-                    xangleBtn.disabled = false;
-
-                    // Query initial statuses
-                    console.log('Querying initial statuses...');
-                    await Promise.all([getFSRStatus(), getXangleStatus()]);
-                } else {
-                    // Disconnect from the device
-                    console.log('Disconnecting from Bluetooth device...');
-                    if (device && device.gatt.connected) {
-                        await device.gatt.disconnect();
-                    }
-                    isConnected = false;
-                    connectBtn.textContent = 'Connect';
-                    fsrBtn.disabled = true;
-                    xangleBtn.disabled = true;
-                    fsrBtn.textContent = 'Grip Unk';
-                    xangleBtn.textContent = 'Xangle Unk';
-                    fsrValue.textContent = 'FSR: --';
-                    xangleValue.textContent = 'Xangle: --';
-                }
-            } catch (error) {
-                console.error('Bluetooth connection failed:', error);
-                alert('Failed to connect. Please ensure the device is powered on and in pairing mode.');
-            }
+            steps[step] = Math.min(max, Math.max(min, steps[step] + increment));
+            document.getElementById(`${step}-value`).textContent = steps[step];
         }
 
-        async function toggleFSR() {
-            if (!txCharacteristic) {
-                alert('Not connected to paddle!');
-                return;
-            }
-            try {
-                const command = 'TOGGLE_FSR\n';
-                await txCharacteristic.writeValue(new TextEncoder().encode(command));
-            } catch (error) {
-                console.error('Error toggling FSR:', error);
-            }
+        // Function to adjust X Angle
+        function adjustXAngle(change) {
+            const minXAngle = -9; // Lower limit for X Angle
+            const maxXAngle = 9;  // Upper limit for X Angle
+            xAngleThreshold = Math.min(maxXAngle, Math.max(minXAngle, xAngleThreshold + change)); // Constrain the value
+            document.getElementById("xangle-adjust-value").textContent = xAngleThreshold.toFixed(1); // Update display with one decimal
         }
 
-        async function getFSRStatus() {
-            if (!txCharacteristic) return;
-            try {
-                const command = 'GET_FSR\n';
-                await txCharacteristic.writeValue(new TextEncoder().encode(command));
-            } catch (error) {
-                console.error('Error sending GET_FSR command:', error);
-            }
+        // Function to adjust X Haptic Intensity
+        function adjustXHaptic(change) {
+            xHapticIntensity = Math.min(100, Math.max(0, xHapticIntensity + change));
+            document.getElementById("xhaptic-value").textContent = xHapticIntensity;
         }
-
-        async function toggleXangle() {
-            if (!txCharacteristic) {
-		alert('Not connected to paddle!');
-		return;
-	    }
-            try {
-                const command = 'TOGGLE_XANGLE\n';
-                await txCharacteristic.writeValue(new TextEncoder().encode(command));
-            } catch (error) {
-                console.error('Error toggling Xangle:', error);
-            }
-        }
-
-        async function getXangleStatus() {
-            if (!txCharacteristic) return;
-            try {
-                const command = 'GET_XANGLE\n';
-                await txCharacteristic.writeValue(new TextEncoder().encode(command));
-            } catch (error) {
-                console.error('Error sending GET_XANGLE command:', error);
-            }
-        }
-
-        let currentFSR = '--';
-        let currentStep = '--';
-
-        function handleNotifications(event) {
-            const value = new TextDecoder().decode(event.target.value).trim();
-            console.log(`Received: ${value}`);
-
-         if (value.includes('FSR ENABLED')) {
-            fsrBtn.textContent = 'Turn Grip Off';
-        } else if (value.includes('FSR DISABLED')) {
-            fsrBtn.textContent = 'Turn Grip On';
-        } else if (value.startsWith('FSR:')) {
-            // Update current FSR value
-            currentFSR = value.split(':')[1].trim();
-            fsrValue.textContent = `FSR: ${currentFSR} Step: ${currentStep}`;
-        } else if (value.startsWith('STEP:')) {
-            // Update current Step value
-            currentStep = value.split(':')[1].trim();
-            fsrValue.textContent = `FSR: ${currentFSR} Step: ${currentStep}`;
-        } else if (value.includes('XANGLE ENABLED')) {
-            xangleBtn.textContent = 'Turn Xangle Off';
-        } else if (value.includes('XANGLE DISABLED')) {
-            xangleBtn.textContent = 'Turn Xangle On';
-        } else if (value.startsWith('XANGLE:')) {
-            // Update the Xangle display
-            xangleValue.textContent = value.split(':')[1].trim();
-        } else {
-            console.log(`Unrecognized message: ${value}`);
-        }
-    }
-        connectBtn.addEventListener('click', connect);
-        fsrBtn.addEventListener('click', toggleFSR);
-        xangleBtn.addEventListener('click', toggleXangle);
-    </script>
+  </script>
 </body>
 </html>
