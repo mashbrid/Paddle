@@ -1,112 +1,204 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Paddle Controller</title>
-  <style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paddle Controller</title>
+    <style>
+        /* Basic body styling */
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 10px;
+            font-family: Arial, sans-serif; /* Set the font for the entire page */
+            text-align: center; /* Center-align the text */
+            margin: 10px; /* Add margin around the body */
         }
+
+        /* Main container that holds all the elements */
         .main-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            display: flex; /* Use flexbox layout */
+            flex-direction: column; /* Arrange items in a column */
+            align-items: center; /* Center the items horizontally */
         }
+
+        /* Styling for the connect button */
         #connect-btn {
-            margin-bottom: 20px;
+            margin-bottom: 20px; /* Add space below the connect button */
         }
+
+        /* Container for the columns of buttons */
         .columns {
-            display: flex;
-            justify-content: center;
-            gap: 40px; /* Space between the two columns */
+            display: flex; /* Use flexbox layout for the columns */
+            justify-content: center; /* Center the columns horizontally */
+            gap: 10px; /* Space between the two columns */
         }
+
+        /* Styling for each individual column of buttons */
         .column {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            display: flex; /* Use flexbox layout within each column */
+            flex-direction: column; /* Arrange buttons vertically within each column */
+            align-items: center; /* Center the buttons horizontally within the column */
         }
+
+        /* Container for button groups, allowing buttons to wrap if needed */
         .button-group {
-            display: flex;
-            flex-wrap: wrap; /* Allow buttons to wrap if needed */
-            justify-content: center; /* Center the buttons */
+            display: flex; /* Use flexbox layout for button group */
+            flex-wrap: wrap; /* Allow buttons to wrap onto the next line if needed */
+            justify-content: center; /* Center the buttons horizontally */
             gap: 10px; /* Space between buttons */
-            margin-top: 10px; /* Optional margin for spacing */
+            margin-top: 10px; /* Optional margin for spacing above the button group */
         }
+
+        /* Button styling */
         button {
-            min-width: 150px; /* Ensure consistent button size */
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-            text-align: center; /* Prevent text wrapping */
-            white-space: nowrap; /* Prevent text wrapping */
-            margin-bottom: 3px; /* Space between buttons */
+            min-width: 150px; /* Ensure buttons have a consistent minimum width */
+            padding: 10px 20px; /* Add padding to make buttons larger */
+            font-size: 16px; /* Set font size for button text */
+            cursor: pointer; /* Change cursor to pointer on hover */
+            background-color: #007bff; /* Button background color */
+            color: white; /* Set text color */
+            border: none; /* Remove default button border */
+            border-radius: 5px; /* Rounded corners for the button */
+            transition: background-color 0.3s ease; /* Smooth transition for background color change */
+            text-align: center; /* Prevent text from wrapping within button */
+            white-space: nowrap; /* Prevent text from wrapping to the next line */
+            margin-bottom: 3px; /* Space between buttons vertically */
         }
+
+        /* Button hover effect */
         button:hover {
-            background-color: #0056b3;
+            background-color: #0056b3; /* Change background color on hover */
         }
+
+        /* Disabled button styling */
         button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
+            background-color: #cccccc; /* Set background color to gray */
+            cursor: not-allowed; /* Change cursor to indicate that the button is disabled */
         }
+
+        /* Adjust button container styling */
         .adjust-button {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 5px 10px;
-            width: 150px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
+            display: flex; /* Use flexbox layout for the adjust button */
+            align-items: center; /* Align items vertically */
+            justify-content: space-between; /* Space out content between the left and right sides */
+            background-color: #007bff; /* Background color */
+            color: white; /* Text color */
+            border: none; /* Remove border */
+            border-radius: 5px; /* Rounded corners */
+            padding: 5px 10px; /* Add padding for size */
+            width: 150px; /* Set a fixed width for the adjust button */
+            font-size: 16px; /* Font size for the text */
+            cursor: pointer; /* Pointer cursor on hover */
+            transition: background-color 0.3s ease; /* Smooth transition for background color change */
         }
+
+        /* Hover effect for adjust buttons */
         .adjust-button:hover {
-            background-color: #0056b3;
+            background-color: #0056b3; /* Change background color on hover */
         }
+
+        /* Span inside adjust button to center the text */
         .adjust-button span {
-            flex: 1;
-            text-align: center;
+            flex: 1; /* Allow span to take up available space */
+            text-align: center; /* Center the text inside the span */
         }
+
+        /* Styling for the minus and plus signs inside adjust buttons */
         .adjust-button .minus, .adjust-button .plus {
-            font-weight: bold;
-            padding: 0 5px;
-            cursor: pointer;
+            font-weight: bold; /* Make minus and plus signs bold */
+            padding: 0 5px; /* Add space around the minus and plus signs */
+            cursor: pointer; /* Pointer cursor on hover */
         }
+
+        /* Display the current value inside the button */
         .value-display {
-            font-size: 14px;
-            color: #333;
+            font-size: 14px; /* Smaller font size for value display */
+            color: #333; /* Dark gray color for text */
         }
-  </style>
+    </style>
 </head>
 <body>
-  <div class="main-container">
-    <h1>Paddle Controller</h1><button id="connect-btn">Connect</button>
-    <div class="columns">
-      <div class="column">
-        <button id="fsr-btn" disabled>Grip Unk</button>
-        <div id="fsr-value" class="value-display">
-          FSR: -- Step: --
-        </div><button class="adjust-button" id="step1-btn"><span class="minus" onclick="adjustStep('step1', -10)">-</span> <span>Step 1: <span id="step1-value">0</span></span> <span class="plus" onclick="adjustStep('step1', 10)">+</span></button> <button class="adjust-button" id="step2-btn"><span class="minus" onclick="adjustStep('step2', -10)">-</span> <span>Step 2: <span id="step2-value">0</span></span> <span class="plus" onclick="adjustStep('step2', 10)">+</span></button> <button class="adjust-button" id="step3-btn"><span class="minus" onclick="adjustStep('step3', -10)">-</span> <span>Step 3: <span id="step3-value">0</span></span> <span class="plus" onclick="adjustStep('step3', 10)">+</span></button> <button class="adjust-button" id="step4-btn"><span class="minus" onclick="adjustStep('step4', -10)">-</span> <span>Step 4: <span id="step4-value">0</span></span> <span class="plus" onclick="adjustStep('step4', 10)">+</span></button> <button class="adjust-button" id="step5-btn"><span class="minus" onclick="adjustStep('step5', -10)">-</span> <span>Step 5: <span id="step5-value">0</span></span> <span class="plus" onclick="adjustStep('step5', 10)">+</span></button> <button class="adjust-button" id="step6-btn"><span class="minus" onclick="adjustStep('step6', -10)">-</span> <span>Step 6: <span id="step6-value">0</span></span> <span class="plus" onclick="adjustStep('step6', 10)">+</span></button> <button class="adjust-button" id="step7-btn"><span class="minus" onclick="adjustStep('step7', -10)">-</span> <span>Step 7: <span id="step7-value">0</span></span> <span class="plus" onclick="adjustStep('step7', 10)">+</span></button> <button class="adjust-button" id="step8-btn"><span class="minus" onclick="adjustStep('step8', -10)">-</span> <span>Step 8: <span id="step8-value">0</span></span> <span class="plus" onclick="adjustStep('step8', 10)">+</span></button> <button class="adjust-button" id="step9-btn"><span class="minus" onclick="adjustStep('step9', -10)">-</span> <span>Step 9: <span id="step9-value">0</span></span> <span class="plus" onclick="adjustStep('step9', 10)">+</span></button> <button class="adjust-button" id="step10-btn"><span class="minus" onclick="adjustStep('step10', -10)">-</span> <span>Step 10: <span id="step10-value">0</span></span> <span class="plus" onclick="adjustStep('step10', 10)">+</span></button>
-      </div>
-      <div class="column">
-        <button id="xangle-btn" disabled>X Angle Unk</button>
-        <div id="xangle-value" class="value-display">
-          X Angle: --
-        </div><button class="adjust-button" id="xangle-adjust-btn"><span class="minus" onclick="adjustXAngle(-0.5)">-</span> <span>X Angle: <span id="xangle-adjust-value">-3.0</span></span> <span class="plus" onclick="adjustXAngle(0.5)">+</span></button> <button class="adjust-button" id="xhaptic-btn"><span class="minus" onclick="adjustXHaptic(-10)">-</span> <span>X Haptic: <span id="xhaptic-value">50</span>%</span> <span class="plus" onclick="adjustXHaptic(10)">+</span></button>
-      </div>
+    <div class="main-container">
+        <h1>Paddle Controller</h1>
+        <button id="connect-btn">Connect</button>
+
+        <div class="columns">
+            <!-- Left column for FSR/Step-related buttons -->
+            <div class="column">
+                <button id="fsr-btn" disabled>Grip Unk</button>
+                <div id="fsr-value" class="value-display">FSR: -- Step: --</div>
+
+                <button class="adjust-button" id="step1-btn">
+                    <span class="minus" onclick="adjustStep('step1', -10)">-</span>
+                    <span>Step 1: <span id="step1-value">0</span></span>
+                    <span class="plus" onclick="adjustStep('step1', 10)">+</span>
+                </button>
+                <button class="adjust-button" id="step2-btn">
+                    <span class="minus" onclick="adjustStep('step2', -10)">-</span>
+                    <span>Step 2: <span id="step2-value">0</span></span>
+                    <span class="plus" onclick="adjustStep('step2', 10)">+</span>
+                </button>
+                <button class="adjust-button" id="step3-btn">
+                    <span class="minus" onclick="adjustStep('step3', -10)">-</span>
+                    <span>Step 3: <span id="step3-value">0</span></span>
+                    <span class="plus" onclick="adjustStep('step3', 10)">+</span>
+                </button>
+                <button class="adjust-button" id="step4-btn">
+                    <span class="minus" onclick="adjustStep('step4', -10)">-</span>
+                    <span>Step 4: <span id="step4-value">0</span></span>
+                    <span class="plus" onclick="adjustStep('step4', 10)">+</span>
+                </button>
+                <button class="adjust-button" id="step5-btn">
+                    <span class="minus" onclick="adjustStep('step5', -10)">-</span>
+                    <span>Step 5: <span id="step5-value">0</span></span>
+                    <span class="plus" onclick="adjustStep('step5', 10)">+</span>
+                </button>
+                <!-- Step 6 through Step 10 buttons added here -->
+                <button class="adjust-button" id="step6-btn">
+                    <span class="minus" onclick="adjustStep('step6', -10)">-</span>
+                    <span>Step 6: <span id="step6-value">0</span></span>
+                    <span class="plus" onclick="adjustStep('step6', 10)">+</span>
+                </button>
+                <button class="adjust-button" id="step7-btn">
+                    <span class="minus" onclick="adjustStep('step7', -10)">-</span>
+                    <span>Step 7: <span id="step7-value">0</span></span>
+                    <span class="plus" onclick="adjustStep('step7', 10)">+</span>
+                </button>
+                <button class="adjust-button" id="step8-btn">
+                    <span class="minus" onclick="adjustStep('step8', -10)">-</span>
+                    <span>Step 8: <span id="step8-value">0</span></span>
+                    <span class="plus" onclick="adjustStep('step8', 10)">+</span>
+                </button>
+                <button class="adjust-button" id="step9-btn">
+                    <span class="minus" onclick="adjustStep('step9', -10)">-</span>
+                    <span>Step 9: <span id="step9-value">0</span></span>
+                    <span class="plus" onclick="adjustStep('step9', 10)">+</span>
+                </button>
+                <button class="adjust-button" id="step10-btn">
+                    <span class="minus" onclick="adjustStep('step10', -10)">-</span>
+                    <span>Step 10: <span id="step10-value">0</span></span>
+                    <span class="plus" onclick="adjustStep('step10', 10)">+</span>
+                </button>
+            </div>
+
+            <!-- Right column for X Angle-related buttons -->
+            <div class="column">
+                <button id="xangle-btn" disabled>X Angle Unk</button>
+                <div id="xangle-value" class="value-display">X Angle: --</div>
+
+                <button class="adjust-button" id="xangle-adjust-btn">
+                    <span class="minus" onclick="adjustXAngle(-0.5)">-</span>
+                    <span>X Angle: <span id="xangle-adjust-value">-3.0</span></span>
+                    <span class="plus" onclick="adjustXAngle(0.5)">+</span>
+                </button>
+                <button class="adjust-button" id="xhaptic-btn">
+                    <span class="minus" onclick="adjustXHaptic(-10)">-</span>
+                    <span>X Haptic: <span id="xhaptic-value">50</span>%</span>
+                    <span class="plus" onclick="adjustXHaptic(10)">+</span>
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
-  <script>
+
+    <script>
         let device;
         let server;
         let uartService;
@@ -137,6 +229,117 @@
             steps[step] = Math.min(max, Math.max(min, steps[step] + increment));
             document.getElementById(`${step}-value`).textContent = steps[step];
         }
+        const SERVICE_UUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
+        const TX_CHAR_UUID = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
+        const RX_CHAR_UUID = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
+
+        const connectBtn = document.getElementById('connect-btn');
+        const fsrBtn = document.getElementById('fsr-btn');
+        const fsrValue = document.getElementById('fsr-value');
+        const xangleBtn = document.getElementById('xangle-btn');
+        const xangleValue = document.getElementById('xangle-value');
+
+        async function connect() {
+            try {
+                if (!isConnected) {
+                    console.log('Requesting Bluetooth device...');
+                    device = await navigator.bluetooth.requestDevice({
+                        filters: [{ services: [SERVICE_UUID] }]
+                    });
+
+                    console.log('Connecting to GATT server...');
+                    server = await device.gatt.connect();
+
+                    console.log('Getting UART service...');
+                    uartService = await server.getPrimaryService(SERVICE_UUID);
+
+                    console.log('Getting TX and RX characteristics...');
+                    txCharacteristic = await uartService.getCharacteristic(TX_CHAR_UUID);
+                    rxCharacteristic = await uartService.getCharacteristic(RX_CHAR_UUID);
+
+                    console.log('Starting notifications...');
+                    await rxCharacteristic.startNotifications();
+                    rxCharacteristic.addEventListener('characteristicvaluechanged', handleNotifications);
+
+                    // Update UI on successful connection
+                    console.log('Connected successfully.');
+                    isConnected = true;
+                    connectBtn.textContent = 'Disconnect';
+                    fsrBtn.disabled = false;
+                    xangleBtn.disabled = false;
+
+                    // Query initial statuses
+                    console.log('Querying initial statuses...');
+                    await Promise.all([getFSRStatus(), getXangleStatus()]);
+                } else {
+                    // Disconnect from the device
+                    console.log('Disconnecting from Bluetooth device...');
+                    if (device && device.gatt.connected) {
+                        await device.gatt.disconnect();
+                    }
+                    isConnected = false;
+                    connectBtn.textContent = 'Connect';
+                    fsrBtn.disabled = true;
+                    xangleBtn.disabled = true;
+                    fsrBtn.textContent = 'Grip Unk';
+                    xangleBtn.textContent = 'X Angle Unk';
+                    fsrValue.textContent = 'FSR: --';
+                    xangleValue.textContent = 'X Angle: --';
+                }
+            } catch (error) {
+                console.error('Bluetooth connection failed:', error);
+                alert('Failed to connect. Please ensure the device is powered on and in pairing mode.');
+            }
+        }
+
+        async function toggleFSR() {
+            if (!txCharacteristic) {
+                alert('Not connected to paddle!');
+                return;
+            }
+            try {
+                const command = 'TOGGLE_FSR\n';
+                await txCharacteristic.writeValue(new TextEncoder().encode(command));
+            } catch (error) {
+                console.error('Error toggling FSR:', error);
+            }
+        }
+
+        async function getFSRStatus() {
+            if (!txCharacteristic) return;
+            try {
+                const command = 'GET_FSR\n';
+                await txCharacteristic.writeValue(new TextEncoder().encode(command));
+            } catch (error) {
+                console.error('Error sending GET_FSR command:', error);
+            }
+        }
+
+        async function toggleXangle() {
+            if (!txCharacteristic) {
+		alert('Not connected to paddle!');
+		return;
+	    }
+            try {
+                const command = 'TOGGLE_XANGLE\n';
+                await txCharacteristic.writeValue(new TextEncoder().encode(command));
+            } catch (error) {
+                console.error('Error toggling Xangle:', error);
+            }
+        }
+
+        async function getXangleStatus() {
+            if (!txCharacteristic) return;
+            try {
+                const command = 'GET_XANGLE\n';
+                await txCharacteristic.writeValue(new TextEncoder().encode(command));
+            } catch (error) {
+                console.error('Error sending GET_XANGLE command:', error);
+            }
+        }
+
+        let currentFSR = '--';
+        let currentStep = '--';
 
         // Function to adjust X Angle
         function adjustXAngle(change) {
@@ -151,6 +354,39 @@
             xHapticIntensity = Math.min(100, Math.max(0, xHapticIntensity + change));
             document.getElementById("xhaptic-value").textContent = xHapticIntensity;
         }
-  </script>
+
+        function handleNotifications(event) {
+            const value = new TextDecoder().decode(event.target.value).trim();
+            console.log(`Received: ${value}`);
+
+         if (value.includes('FSR ENABLED')) {
+            fsrBtn.textContent = 'Turn Grip Off';
+        } else if (value.includes('FSR DISABLED')) {
+            fsrBtn.textContent = 'Turn Grip On';
+        } else if (value.startsWith('FSR:')) {
+            // Update current FSR value
+            currentFSR = value.split(':')[1].trim();
+            fsrValue.textContent = `FSR: ${currentFSR} Step: ${currentStep}`;
+        } else if (value.startsWith('STEP:')) {
+            // Update current Step value
+            currentStep = value.split(':')[1].trim();
+            fsrValue.textContent = `FSR: ${currentFSR} Step: ${currentStep}`;
+        } else if (value.includes('XANGLE ENABLED')) {
+            xangleBtn.textContent = 'Turn X Angle Off';
+        } else if (value.includes('XANGLE DISABLED')) {
+            xangleBtn.textContent = 'Turn X Angle On';
+        } else if (value.startsWith('XANGLE:')) {
+            // Update the Xangle display
+            const xAngleValue = value.split(':')[1].trim();
+            xangleValue.textContent = `X Angle: ${xAngleValue}`;
+        } else {
+            console.log(`Unrecognized message: ${value}`);
+        }
+    }
+        connectBtn.addEventListener('click', connect);
+        fsrBtn.addEventListener('click', toggleFSR);
+        xangleBtn.addEventListener('click', toggleXangle);
+
+    </script>
 </body>
 </html>
