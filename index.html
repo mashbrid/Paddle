@@ -9,7 +9,7 @@
         body {
             font-family: Arial, sans-serif; /* Set the font for the entire page */
             text-align: center; /* Center-align the text */
-            margin: 10px; /* Add margin around the body */
+            margin: 5px; /* Add margin around the body */
         }
 
         /* Main container that holds all the elements */
@@ -18,10 +18,14 @@
             flex-direction: column; /* Arrange items in a column */
             align-items: center; /* Center the items horizontally */
         }
-
+        h1 {
+            margin-top: 0; /* Reduce space above the header */
+            margin-bottom: 5px; /* Adjust space below the header */
+        }
         /* Styling for the connect button */
         #connect-btn {
-            margin-bottom: 20px; /* Add space below the connect button */
+            margin-top: 5px; /* Adjust space above the Connect button */
+            margin-bottom: 5px; /* Optional margin for spacing, can be adjusted */
         }
 
         /* Container for the columns of buttons */
@@ -126,11 +130,6 @@
                 <button id="fsr-btn" disabled>Grip Unk</button>
                 <div id="fsr-value" class="value-display">FSR: -- Step: --</div>
 
-                <button class="adjust-button" id="step1-btn">
-                    <span class="minus" onclick="adjustStep('step1', -10)">-</span>
-                    <span>Step 1: <span id="step1-value">0</span></span>
-                    <span class="plus" onclick="adjustStep('step1', 10)">+</span>
-                </button>
                 <button class="adjust-button" id="step2-btn">
                     <span class="minus" onclick="adjustStep('step2', -10)">-</span>
                     <span>Step 2: <span id="step2-value">0</span></span>
