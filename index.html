@@ -78,48 +78,6 @@
             cursor: not-allowed; /* Change cursor to indicate that the button is disabled */
         }
 
-        /* Adjust button container styling */
-        .adjust-button {
-            display: flex; /* Use flexbox layout for the adjust button */
-            align-items: center; /* Align items vertically */
-            justify-content: space-between; /* Space out content between the left and right sides */
-            background-color: #007bff; /* Background color */
-            color: white; /* Text color */
-            border: none; /* Remove border */
-            border-radius: 5px; /* Rounded corners */
-            padding: 5px 10px; /* Add padding for size */
-            width: 150px; /* Set a fixed width for the adjust button */
-            font-size: 16px; /* Font size for the text */
-            cursor: pointer; /* Pointer cursor on hover */
-            transition: background-color 0.3s ease; /* Smooth transition for background color change */
-        }
-
-        /* Hover effect for adjust buttons */
-        .adjust-button:hover {
-            background-color: #0056b3; /* Change background color on hover */
-        }
-
-        /* Span inside adjust button to center the text */
-        .adjust-button span {
-            flex: 1; /* Allow span to take up available space */
-            text-align: center; /* Center the text inside the span */
-        }
-
-        /* Styling for the minus and plus signs inside adjust buttons */
-        .adjust-button .minus, .adjust-button .plus {
-            font-weight: bold; /* Make minus and plus signs bold */
-            padding: 0 5px; /* Add space around the minus and plus signs */
-            cursor: pointer; /* Pointer cursor on hover */
-        }
-
-        /* Display the current value inside the button */
-        .value-display {
-            font-size: 14px; /* Smaller font size for value display */
-            color: #333; /* Dark gray color for text */
-        }
-	/*Extra space for Calibrate buttons*/
-        .spaced-button {
-            margin-top: 40px; /* set space above calibrate buttons */
     </style>
 </head>
 <body>
@@ -152,26 +110,6 @@
         let xAngleThreshold = -3.0; // Default X Angle threshold value
         let xHapticIntensity = 50; // Default X Haptic intensity value
 
-        const steps = {
-            step2: 0,
-            step3: 0,
-            step4: 0,
-            step5: 0,
-            step6: 0,
-            step7: 0,
-            step8: 0,
-            step9: 0,
-            step10: 0
-        };
-
-        // Adjust step value function
-        function adjustStep(step, increment) {
-            const min = 0;
-            const max = 100;
-
-            steps[step] = Math.min(max, Math.max(min, steps[step] + increment));
-            document.getElementById(`${step}-value`).textContent = steps[step];
-        }
         const SERVICE_UUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
         const TX_CHAR_UUID = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
         const RX_CHAR_UUID = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
@@ -284,19 +222,7 @@
         let currentFSR = '--';
         let currentStep = '--';
 
-        // Function to adjust X Angle
-        function adjustXAngle(change) {
-            const minXAngle = -9; // Lower limit for X Angle
-            const maxXAngle = 9;  // Upper limit for X Angle
-            xAngleThreshold = Math.min(maxXAngle, Math.max(minXAngle, xAngleThreshold + change)); // Constrain the value
-            document.getElementById("xangle-adjust-value").textContent = xAngleThreshold.toFixed(1); // Update display with one decimal
-        }
 
-        // Function to adjust X Haptic Intensity
-        function adjustXHaptic(change) {
-            xHapticIntensity = Math.min(100, Math.max(0, xHapticIntensity + change));
-            document.getElementById("xhaptic-value").textContent = xHapticIntensity;
-        }
 
         function handleNotifications(event) {
             const value = new TextDecoder().decode(event.target.value).trim();
@@ -333,4 +259,3 @@
     </script>
 </body>
 </html>
-
