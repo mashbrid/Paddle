@@ -22,7 +22,7 @@
             margin-top: 0; /* Reduce space above the header */
             margin-bottom: 5px; /* Adjust space below the header */
         }
-        /* Styling for the connect button */
+        /* Styling for the Connect button */
         #connect-btn {
             margin-top: 5px; /* Adjust space above the Connect button */
             margin-bottom: 5px; /* Optional margin for spacing, can be adjusted */
@@ -132,74 +132,12 @@
             <div class="column">
                 <button id="fsr-btn" disabled>Grip Unk</button>
                 <div id="fsr-value" class="value-display">FSR: -- Step: --</div>
-
-                <button class="adjust-button" id="step2-btn">
-                    <span class="minus" onclick="adjustStep('step2', -10)">-</span>
-                    <span>Step 2: <span id="step2-value">0</span></span>
-                    <span class="plus" onclick="adjustStep('step2', 10)">+</span>
-                </button>
-                <button class="adjust-button" id="step3-btn">
-                    <span class="minus" onclick="adjustStep('step3', -10)">-</span>
-                    <span>Step 3: <span id="step3-value">0</span></span>
-                    <span class="plus" onclick="adjustStep('step3', 10)">+</span>
-                </button>
-                <button class="adjust-button" id="step4-btn">
-                    <span class="minus" onclick="adjustStep('step4', -10)">-</span>
-                    <span>Step 4: <span id="step4-value">0</span></span>
-                    <span class="plus" onclick="adjustStep('step4', 10)">+</span>
-                </button>
-                <button class="adjust-button" id="step5-btn">
-                    <span class="minus" onclick="adjustStep('step5', -10)">-</span>
-                    <span>Step 5: <span id="step5-value">0</span></span>
-                    <span class="plus" onclick="adjustStep('step5', 10)">+</span>
-                </button>
-                <!-- Step 6 through Step 10 buttons added here -->
-                <button class="adjust-button" id="step6-btn">
-                    <span class="minus" onclick="adjustStep('step6', -10)">-</span>
-                    <span>Step 6: <span id="step6-value">0</span></span>
-                    <span class="plus" onclick="adjustStep('step6', 10)">+</span>
-                </button>
-                <button class="adjust-button" id="step7-btn">
-                    <span class="minus" onclick="adjustStep('step7', -10)">-</span>
-                    <span>Step 7: <span id="step7-value">0</span></span>
-                    <span class="plus" onclick="adjustStep('step7', 10)">+</span>
-                </button>
-                <button class="adjust-button" id="step8-btn">
-                    <span class="minus" onclick="adjustStep('step8', -10)">-</span>
-                    <span>Step 8: <span id="step8-value">0</span></span>
-                    <span class="plus" onclick="adjustStep('step8', 10)">+</span>
-                </button>
-                <button class="adjust-button" id="step9-btn">
-                    <span class="minus" onclick="adjustStep('step9', -10)">-</span>
-                    <span>Step 9: <span id="step9-value">0</span></span>
-                    <span class="plus" onclick="adjustStep('step9', 10)">+</span>
-                </button>
-                <button class="adjust-button" id="step10-btn">
-                    <span class="minus" onclick="adjustStep('step10', -10)">-</span>
-                    <span>Step 10: <span id="step10-value">0</span></span>
-                    <span class="plus" onclick="adjustStep('step10', 10)">+</span>
-                </button>
             </div>
 
             <!-- Right column for X Angle-related buttons -->
             <div class="column">
                 <button id="xangle-btn" disabled>X Angle Unk</button>
                 <div id="xangle-value" class="value-display">X Angle: --</div>
-
-                <button class="adjust-button" id="xangle-adjust-btn">
-                    <span class="minus" onclick="adjustXAngle(-0.5)">-</span>
-                    <span>X Angle: <span id="xangle-adjust-value">-3.0</span></span>
-                    <span class="plus" onclick="adjustXAngle(0.5)">+</span>
-                </button>
-                <button class="adjust-button" id="xhaptic-btn">
-                    <span class="minus" onclick="adjustXHaptic(-10)">-</span>
-                    <span>X Haptic: <span id="xhaptic-value">50</span>%</span>
-                    <span class="plus" onclick="adjustXHaptic(10)">+</span>
-                </button>
-		    
-		<button class="spaced-button">Set FSR Low</button>
-                <button class="adjust-button">Set FSR High</button>
-		    
             </div>
         </div>
     </div>
@@ -395,3 +333,4 @@
     </script>
 </body>
 </html>
+
