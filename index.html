@@ -148,10 +148,10 @@
                 <div id="fsr-value">FSR: -- Step: --</div>
             </div>
 
-            <!-- X Angle column -->
+            <!-- Angle column -->
             <div class="column">
-                <button id="xangle-btn" disabled>X Angle Unk</button>
-                <div id="xangle-value">X Angle: --</div>
+                <button id="xangle-btn" disabled>Angle Unk</button>
+                <div id="xangle-value">Angle: --</div>
             </div>
         </div>
     </div>
@@ -297,9 +297,9 @@
             fsrBtn.disabled = true;
             xangleBtn.disabled = true;
             fsrBtn.textContent = 'Grip Unk';
-            xangleBtn.textContent = 'X Angle Unk';
+            xangleBtn.textContent = 'Angle Unk';
             fsrValue.textContent = 'FSR: -- Step: --';
-            xangleValue.textContent = 'X Angle: --';
+            xangleValue.textContent = 'Angle: --';
         }
 
         async function toggleFSR() { if (!txCharacteristic) return; await txCharacteristic.writeValue(new TextEncoder().encode('TOGGLE_FSR\n')); }
@@ -314,8 +314,8 @@
             else if (value.includes('FSR DISABLED')) fsrBtn.textContent = 'Turn Grip On';
             else if (value.startsWith('FSR:')) { currentFSR = value.split(':')[1].trim(); fsrValue.textContent = `FSR: ${currentFSR} Step: ${currentStep}`; }
             else if (value.startsWith('STEP:')) { currentStep = value.split(':')[1].trim(); fsrValue.textContent = `FSR: ${currentFSR} Step: ${currentStep}`; }
-            else if (value.includes('XANGLE ENABLED')) xangleBtn.textContent = 'Turn X Angle Off';
-            else if (value.includes('XANGLE DISABLED')) xangleBtn.textContent = 'Turn X Angle On';
+            else if (value.includes('XANGLE ENABLED')) xangleBtn.textContent = 'Turn Angle Off';
+            else if (value.includes('XANGLE DISABLED')) xangleBtn.textContent = 'Turn Angle On';
             else if (value.startsWith('XANGLE:')) { const angle = value.split(':')[1].trim(); xangleValue.textContent = `X Angle: ${angle}`; }
         }
 
@@ -343,3 +343,4 @@
     </script>
 </body>
 </html>
+
