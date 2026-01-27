@@ -4,254 +4,369 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Paddle Controller</title>
+
     <style>
-        /* Basic body styling */
+        /* =========================
+           BASIC PAGE STYLING
+           ========================= */
+
         body {
-            font-family: Arial, sans-serif; /* Set the font for the entire page */
-            text-align: center; /* Center-align the text */
-            margin: 5px; /* Add margin around the body */
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 5px;
         }
 
-        /* Main container that holds all the elements */
         .main-container {
-            display: flex; /* Use flexbox layout */
-            flex-direction: column; /* Arrange items in a column */
-            align-items: center; /* Center the items horizontally */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
+
         h1 {
-            margin-top: 0; /* Reduce space above the header */
-            margin-bottom: 5px; /* Adjust space below the header */
+            margin-top: 0;
+            margin-bottom: 5px;
         }
-        /* Styling for the Connect button */
+
         #connect-btn {
-            margin-top: 5px; /* Adjust space above the Connect button */
-            margin-bottom: 5px; /* Optional margin for spacing, can be adjusted */
+            margin-top: 5px;
+            margin-bottom: 5px;
         }
 
-        /* Container for the columns of buttons */
+        /* =========================
+           STATUS BUTTON COLUMNS
+           ========================= */
+
         .columns {
-            display: flex; /* Use flexbox layout for the columns */
-            justify-content: center; /* Center the columns horizontally */
-            gap: 10px; /* Space between the two columns */
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 5px;
         }
 
-        /* Styling for each individual column of buttons */
         .column {
-            display: flex; /* Use flexbox layout within each column */
-            flex-direction: column; /* Arrange buttons vertically within each column */
-            align-items: center; /* Center the buttons horizontally within the column */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        /* Container for button groups, allowing buttons to wrap if needed */
-        .button-group {
-            display: flex; /* Use flexbox layout for button group */
-            flex-wrap: wrap; /* Allow buttons to wrap onto the next line if needed */
-            justify-content: center; /* Center the buttons horizontally */
-            gap: 10px; /* Space between buttons */
-            margin-top: 10px; /* Optional margin for spacing above the button group */
-        }
-
-        /* Button styling */
         button {
-            min-width: 150px; /* Ensure buttons have a consistent minimum width */
-            padding: 10px 20px; /* Add padding to make buttons larger */
-            font-size: 16px; /* Set font size for button text */
-            cursor: pointer; /* Change cursor to pointer on hover */
-            background-color: #007bff; /* Button background color */
-            color: white; /* Set text color */
-            border: none; /* Remove default button border */
-            border-radius: 5px; /* Rounded corners for the button */
-            transition: background-color 0.3s ease; /* Smooth transition for background color change */
-            text-align: center; /* Prevent text from wrapping within button */
-            white-space: nowrap; /* Prevent text from wrapping to the next line */
-            margin-bottom: 3px; /* Space between buttons vertically */
+            min-width: 150px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 4px;
         }
 
-        /* Button hover effect */
         button:hover {
-            background-color: #0056b3; /* Change background color on hover */
+            background-color: #0056b3;
         }
 
-        /* Disabled button styling */
         button:disabled {
-            background-color: #cccccc; /* Set background color to gray */
-            cursor: not-allowed; /* Change cursor to indicate that the button is disabled */
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        /* =========================
+           SLIDER LAYOUT
+           ========================= */
+
+        /* Container for all sliders */
+        .slider-container {
+            display: flex;
+            flex-direction: column;   /* Stack rows vertically */
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        /* Each row holds two sliders */
+        .slider-row {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        /* Individual slider + label */
+        .slider-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Vertical slider styling */
+        input[type="range"] {
+            writing-mode: bt-lr;              /* Vertical orientation */
+            -webkit-appearance: slider-vertical;
+            width: 40px;
+            height: 180px;
         }
 
     </style>
 </head>
+
 <body>
     <div class="main-container">
+
         <h1>Paddle Controller</h1>
+
+        <!-- Connect / Disconnect -->
         <button id="connect-btn">Connect</button>
 
+        <!-- Status buttons -->
         <div class="columns">
-            <!-- Left column for FSR/Step-related buttons -->
+
+            <!-- Grip / FSR column -->
             <div class="column">
                 <button id="fsr-btn" disabled>Grip Unk</button>
-                <div id="fsr-value" class="value-display">FSR: -- Step: --</div>
+                <div id="fsr-value">FSR: -- Step: --</div>
             </div>
 
-            <!-- Right column for X Angle-related buttons -->
+            <!-- X Angle column -->
             <div class="column">
                 <button id="xangle-btn" disabled>X Angle Unk</button>
-                <div id="xangle-value" class="value-display">X Angle: --</div>
+                <div id="xangle-value">X Angle: --</div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- =========================
+         HAPTIC & ANGLE SLIDERS
+         ========================= -->
+
+    <div class="slider-container">
+
+        <!-- ROW 1 -->
+        <div class="slider-row">
+
+            <!-- Slider 1 -->
+            <div class="slider-box">
+                <label for="grip-start-slider">Haptic Start Level</label>
+                <small>Vibration begins at this grip level</small>
+                <input
+                    type="range"
+                    id="grip-start-slider"
+                    min="2"
+                    max="10"
+                    step="1"
+                    value="4">
+            </div>
+
+            <!-- Slider 2 -->
+            <div class="slider-box">
+                <label for="haptic-start-pct">Haptic Start %</label>
+                <small>Strenght of initial Haptic</small>
+                <input
+                    type="range"
+                    id="haptic-start-pct"
+                    min="0"
+                    max="100"
+                    step="5"
+                    value="40">
+            </div>
+
+        </div>
+
+        <!-- ROW 2 -->
+        <div class="slider-row">
+
+            <!-- Slider 3 -->
+            <div class="slider-box">
+                <label for="angle-threshold">Paddle Up notification</label>
+                <small>Up is 10, Flat is 0, Down is -10</small>
+                <input
+                    type="range"
+                    id="angle-threshold"
+                    min="-10"
+                    max="10"
+                    step="1"
+                    value="-3">
+            </div>
+
+            <!-- Slider 4 -->
+            <div class="slider-box">
+                <label for="angle-delay">Paddle Up delay (0.5s)</label>
+                <small>How long to wait</small>
+                <input
+                    type="range"
+                    id="angle-delay"
+                    min="0.5"
+                    max="6"
+                    step="0.5"
+                    value="1.5">
             </div>
         </div>
     </div>
 
     <script>
+        /* =========================
+           BLE VARIABLES
+           ========================= */
+
         let device;
         let server;
         let uartService;
         let txCharacteristic;
         let rxCharacteristic;
         let isConnected = false;
-        let xAngleThreshold = -3.0; // Default X Angle threshold value
-        let xHapticIntensity = 50; // Default X Haptic intensity value
 
+        /* Nordic UART Service UUIDs */
         const SERVICE_UUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
         const TX_CHAR_UUID = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
         const RX_CHAR_UUID = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
 
+        /* UI elements */
         const connectBtn = document.getElementById('connect-btn');
         const fsrBtn = document.getElementById('fsr-btn');
         const fsrValue = document.getElementById('fsr-value');
         const xangleBtn = document.getElementById('xangle-btn');
         const xangleValue = document.getElementById('xangle-value');
 
+        let currentFSR = '--';
+        let currentStep = '--';
+
+        /* =========================
+           CONNECT / DISCONNECT
+           ========================= */
+
         async function connect() {
-            try {
-                if (!isConnected) {
-                    console.log('Requesting Bluetooth device...');
+            if (!isConnected) {
+                try {
+                    // Request device
                     device = await navigator.bluetooth.requestDevice({
                         filters: [{ services: [SERVICE_UUID] }]
                     });
 
-                    console.log('Connecting to GATT server...');
+                    // Connect GATT
                     server = await device.gatt.connect();
-
-                    console.log('Getting UART service...');
                     uartService = await server.getPrimaryService(SERVICE_UUID);
 
-                    console.log('Getting TX and RX characteristics...');
+                    // Get characteristics
                     txCharacteristic = await uartService.getCharacteristic(TX_CHAR_UUID);
                     rxCharacteristic = await uartService.getCharacteristic(RX_CHAR_UUID);
 
-                    console.log('Starting notifications...');
+                    // Enable notifications
                     await rxCharacteristic.startNotifications();
-                    rxCharacteristic.addEventListener('characteristicvaluechanged', handleNotifications);
+                    rxCharacteristic.addEventListener(
+                        'characteristicvaluechanged',
+                        handleNotifications
+                    );
 
-                    // Update UI on successful connection
-                    console.log('Connected successfully.');
+                    // ✅ NOW we are truly connected
                     isConnected = true;
                     connectBtn.textContent = 'Disconnect';
                     fsrBtn.disabled = false;
                     xangleBtn.disabled = false;
 
-                    // Query initial statuses
-                    console.log('Querying initial statuses...');
-                    await Promise.all([getFSRStatus(), getXangleStatus()]);
-                } else {
-                    // Disconnect from the device
-                    console.log('Disconnecting from Bluetooth device...');
-                    if (device && device.gatt.connected) {
-                        await device.gatt.disconnect();
+                    // Fire-and-forget status queries (do NOT fail connection)
+                    getFSRStatus();
+                    getXangleStatus();
+
+                    } catch (error) {
+                        console.warn('BLE warning during connect:', error);
+
+                        // Only alert if we truly did not connect
+                        if (!device || !device.gatt || !device.gatt.connected) {
+                            alert('Failed to connect. Please try again.');
+                        }
                     }
-                    isConnected = false;
-                    connectBtn.textContent = 'Connect';
-                    fsrBtn.disabled = true;
-                    xangleBtn.disabled = true;
-                    fsrBtn.textContent = 'Grip Unk';
-                    xangleBtn.textContent = 'X Angle Unk';
-                    fsrValue.textContent = 'FSR: --';
-                    xangleValue.textContent = 'X Angle: --';
-                }
-            } catch (error) {
-                console.error('Bluetooth connection failed:', error);
-                alert('Failed to connect. Please ensure the device is powered on and in pairing mode.');
+
+            } else {
+                disconnect();
             }
         }
 
+        async function disconnect() {
+            if (device && device.gatt.connected) {
+                device.gatt.disconnect();
+            }
+
+            isConnected = false;
+            connectBtn.textContent = 'Connect';
+            fsrBtn.disabled = true;
+            xangleBtn.disabled = true;
+            fsrBtn.textContent = 'Grip Unk';
+            xangleBtn.textContent = 'X Angle Unk';
+            fsrValue.textContent = 'FSR: -- Step: --';
+            xangleValue.textContent = 'X Angle: --';
+        }
+
+        /* =========================
+           COMMANDS
+           ========================= */
+
         async function toggleFSR() {
-            if (!txCharacteristic) {
-                alert('Not connected to paddle!');
-                return;
-            }
-            try {
-                const command = 'TOGGLE_FSR\n';
-                await txCharacteristic.writeValue(new TextEncoder().encode(command));
-            } catch (error) {
-                console.error('Error toggling FSR:', error);
-            }
+            if (!txCharacteristic) return;
+            await txCharacteristic.writeValue(
+                new TextEncoder().encode('TOGGLE_FSR\n')
+            );
+        }
+
+        async function toggleXangle() {
+            if (!txCharacteristic) return;
+            await txCharacteristic.writeValue(
+                new TextEncoder().encode('TOGGLE_XANGLE\n')
+            );
         }
 
         async function getFSRStatus() {
             if (!txCharacteristic) return;
-            try {
-                const command = 'GET_FSR\n';
-                await txCharacteristic.writeValue(new TextEncoder().encode(command));
-            } catch (error) {
-                console.error('Error sending GET_FSR command:', error);
-            }
-        }
-
-        async function toggleXangle() {
-            if (!txCharacteristic) {
-		alert('Not connected to paddle!');
-		return;
-	    }
-            try {
-                const command = 'TOGGLE_XANGLE\n';
-                await txCharacteristic.writeValue(new TextEncoder().encode(command));
-            } catch (error) {
-                console.error('Error toggling Xangle:', error);
-            }
+            await txCharacteristic.writeValue(
+                new TextEncoder().encode('GET_FSR\n')
+            );
         }
 
         async function getXangleStatus() {
             if (!txCharacteristic) return;
-            try {
-                const command = 'GET_XANGLE\n';
-                await txCharacteristic.writeValue(new TextEncoder().encode(command));
-            } catch (error) {
-                console.error('Error sending GET_XANGLE command:', error);
+            await txCharacteristic.writeValue(
+                new TextEncoder().encode('GET_XANGLE\n')
+            );
+        }
+
+        /* =========================
+           BLE NOTIFICATIONS
+           ========================= */
+
+        function handleNotifications(event) {
+            const value = new TextDecoder()
+                .decode(event.target.value)
+                .trim();
+
+            console.log('RX:', value);
+
+            if (value.includes('FSR ENABLED')) {
+                fsrBtn.textContent = 'Turn Grip Off';
+
+            } else if (value.includes('FSR DISABLED')) {
+                fsrBtn.textContent = 'Turn Grip On';
+
+            } else if (value.startsWith('FSR:')) {
+                currentFSR = value.split(':')[1].trim();
+                fsrValue.textContent = `FSR: ${currentFSR} Step: ${currentStep}`;
+
+            } else if (value.startsWith('STEP:')) {
+                currentStep = value.split(':')[1].trim();
+                fsrValue.textContent = `FSR: ${currentFSR} Step: ${currentStep}`;
+
+            } else if (value.includes('XANGLE ENABLED')) {
+                xangleBtn.textContent = 'Turn X Angle Off';
+
+            } else if (value.includes('XANGLE DISABLED')) {
+                xangleBtn.textContent = 'Turn X Angle On';
+
+            } else if (value.startsWith('XANGLE:')) {
+                const angle = value.split(':')[1].trim();
+                xangleValue.textContent = `X Angle: ${angle}`;
             }
         }
 
-        let currentFSR = '--';
-        let currentStep = '--';
+        /* =========================
+           EVENT LISTENERS
+           ========================= */
 
-
-
-        function handleNotifications(event) {
-            const value = new TextDecoder().decode(event.target.value).trim();
-            console.log(`Received: ${value}`);
-
-         if (value.includes('FSR ENABLED')) {
-            fsrBtn.textContent = 'Turn Grip Off';
-        } else if (value.includes('FSR DISABLED')) {
-            fsrBtn.textContent = 'Turn Grip On';
-        } else if (value.startsWith('FSR:')) {
-            // Update current FSR value
-            currentFSR = value.split(':')[1].trim();
-            fsrValue.textContent = `FSR: ${currentFSR} Step: ${currentStep}`;
-        } else if (value.startsWith('STEP:')) {
-            // Update current Step value
-            currentStep = value.split(':')[1].trim();
-            fsrValue.textContent = `FSR: ${currentFSR} Step: ${currentStep}`;
-        } else if (value.includes('XANGLE ENABLED')) {
-            xangleBtn.textContent = 'Turn X Angle Off';
-        } else if (value.includes('XANGLE DISABLED')) {
-            xangleBtn.textContent = 'Turn X Angle On';
-        } else if (value.startsWith('XANGLE:')) {
-            // Update the Xangle display
-            const xAngleValue = value.split(':')[1].trim();
-            xangleValue.textContent = `X Angle: ${xAngleValue}`;
-        } else {
-            console.log(`Unrecognized message: ${value}`);
-        }
-    }
         connectBtn.addEventListener('click', connect);
         fsrBtn.addEventListener('click', toggleFSR);
         xangleBtn.addEventListener('click', toggleXangle);
