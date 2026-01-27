@@ -81,13 +81,15 @@
         .slider-row {
             display: flex;
             justify-content: center;
-            gap: 30px;
+            align-items: flex-start; /* align top of sliders/labels */
+            gap: 20px; /* space between slider-boxes */
         }
 
         .slider-box {
             display: flex;
             flex-direction: column;
             align-items: center;
+            width: 100px; /* force equal width for all slider boxes */
         }
 
         /* Vertical slider styling */
@@ -115,9 +117,17 @@
         .slider-scale {
             display: flex;
             flex-direction: column;
-            justify-content: space-between; /* This pushes first/mid/last to top/middle/bottom */
-            height: 180px; /* match the height of the slider */
+            justify-content: space-between; /* Top/mid/bottom */
+            height: 180px; /* match slider height */
             font-size: 12px;
+        }
+
+        /* Vertical line between two sliders in a row */
+        .slider-divider {
+            width: 2px;
+            background-color: #ccc;
+            margin: 0 15px;
+            align-self: stretch; /* takes full height of the slider row */
         }
     </style>
 </head>
@@ -149,7 +159,6 @@
     <!-- =========================
          HAPTIC & ANGLE SLIDERS
          ========================= -->
-
     <div class="slider-container">
 
         <!-- ROW 1 -->
@@ -157,7 +166,7 @@
 
             <!-- Slider 1 -->
             <div class="slider-box">
-                <label for="grip-start-slider">HAPTIC START LEVEL</label>
+                <label for="grip-start-slider">HAPTIC START</label>
                 <small>Vibration begins at this grip strength</small>
                 <div class="slider-inner">
                     <div class="slider-current-value" id="grip-start-current">4</div>
@@ -170,10 +179,12 @@
                 </div>
             </div>
 
+            <div class="slider-divider"></div>    <!-- the vertical line -->
+
             <!-- Slider 2 -->
             <div class="slider-box">
                 <label for="angle-threshold">PADDLE UP</label>
-                <small>Tripple Buzz when below</small>
+                <small>Triple Buzz when below</small>
                 <div class="slider-inner">
                     <div class="slider-current-value" id="angle-threshold-current">3</div>
                     <input type="range" id="angle-threshold" min="-10" max="8" step="1" value="3">
@@ -184,6 +195,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
 
         <!-- ROW 2 -->
@@ -199,10 +211,12 @@
                     <div class="slider-scale">
                         <div>Strong</div>
                         <div>Medium</div>
-                        <div>Gentile</div>
+                        <div>Gentle</div>
                     </div>
                 </div>
             </div>
+
+            <div class="slider-divider"></div>
 
             <!-- Slider 4 -->
             <div class="slider-box">
@@ -218,6 +232,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 
@@ -325,7 +340,6 @@
                 displayEl.textContent = sliderEl.value;
             });
         });
-
     </script>
 </body>
 </html>
