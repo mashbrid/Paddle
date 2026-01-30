@@ -38,11 +38,15 @@ button:disabled {
   flex-direction: column;
   align-items: center;
 }
+.header-container h1 {
+  margin: 5px 0; /* 5px top & bottom instead of the default */
+  font-size: 1.5em; /* smaller font for mobile if needed */
+}
 .header-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px; /* space between title and connect button */
+  gap: 5px; /* space between title and connect button */
 }
 
 /* ---- SLIDERS ---- */
@@ -68,7 +72,7 @@ input[type="range"] {
   writing-mode: bt-lr;
   -webkit-appearance: slider-vertical;
   width: 40px;
-  height: 180px;
+  height: 140px; /* <-- Slider height */
 }
 .slider-inner {
   display: flex;
