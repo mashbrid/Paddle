@@ -27,6 +27,13 @@ button:disabled {
   background: #ccc;
   cursor: not-allowed;
 }
+.small-button {
+  min-width: 0;   /* remove the default 150px min-width */
+  width: 70px;    /* fixed width */
+  height: 40px;
+  padding: 5px;   /* optional smaller padding */
+  font-size: 14px; /* optional smaller font */
+}
 .columns {
   display: flex;
   justify-content: center;
@@ -39,26 +46,26 @@ button:disabled {
   align-items: center;
 }
 .header-container h1 {
-  margin: 5px 0; /* 5px top & bottom instead of the default */
-  font-size: 1.5em; /* smaller font for mobile if needed */
+  margin: 5px 0;
+  font-size: 1.5em;
 }
 .header-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px; /* space between title and connect button */
+  gap: 5px;
 }
 
 /* ---- SLIDERS ---- */
 .slider-container {
   display: flex;
   justify-content: center;
-  gap: 40px; /* space between left and right columns */
+  gap: 40px;
   margin-top: 20px;
 }
 .slider-column {
   display: flex;
-  flex-direction: column; /* stack sliders vertically */
+  flex-direction: column;
   gap: 20px;
   align-items: center;
 }
@@ -72,7 +79,7 @@ input[type="range"] {
   writing-mode: bt-lr;
   -webkit-appearance: slider-vertical;
   width: 40px;
-  height: 140px; /* <-- Slider height */
+  height: 140px;
 }
 .slider-inner {
   display: flex;
@@ -83,6 +90,17 @@ input[type="range"] {
   min-width: 35px;
   font-weight: bold;
   text-align: right;
+}
+/* Set Min/Max buttons row */
+.button-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+.button-row button {
+  width: 70px;
+  height: 40px;
+  flex: 0 0 auto;
 }
 </style>
 </head>
@@ -124,6 +142,12 @@ input[type="range"] {
         <div class="slider-current-value" id="haptic-start-current">50</div>
         <input type="range" id="haptic-start-pct" min="0" max="100" step="1" value="50">
       </div>
+    </div>
+
+    <!-- Set Min/Max buttons row -->
+    <div class="button-row">
+       <button id="set-min-btn" class="small-button">Set Min</button>
+       <button id="set-max-btn" class="small-button">Set Max</button>
     </div>
   </div>
 
