@@ -133,7 +133,9 @@ const SERVICE_UUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
 const TX_CHAR_UUID = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
 const RX_CHAR_UUID = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
 
+// -------------------------
 // Connect/Disconnect
+// -------------------------
 connectBtn.addEventListener('click', async () => {
   if (!isConnected) {
     try {
@@ -148,8 +150,11 @@ connectBtn.addEventListener('click', async () => {
       connectBtn.textContent = 'Disconnect';
       fsrBtn.disabled = false;
       xangleBtn.disabled = false;
+
+      // Request current values from CP
       sendCommand('GET_FSR\n');
       sendCommand('GET_XANGLE\n');
+      sendCommand('GET_HSTART\n');
     } catch (err) {
       console.error(err);
       alert('Failed to connect');
@@ -165,7 +170,9 @@ connectBtn.addEventListener('click', async () => {
   }
 });
 
+// -------------------------
 // TOGGLES
+// -------------------------
 fsrBtn.addEventListener('click', () => sendCommand('TOGGLE_FSR\n'));
 xangleBtn.addEventListener('click', () => sendCommand('TOGGLE_XANGLE\n'));
 
@@ -175,7 +182,9 @@ function sendCommand(cmd) {
   }
 }
 
+// -------------------------
 // BLE RX HANDLER
+// -------------------------
 function handleNotifications(event) {
   const msg = new TextDecoder().decode(event.target.value).trim();
   console.log('RX:', msg);
@@ -189,10 +198,18 @@ function handleNotifications(event) {
   else if (msg.startsWith('STEP1:')) {
     currentStep = parseInt(msg.split(':')[1].trim());
     fsrValue.textContent = `FSR: ${currentFSR} Step: ${currentStep}`;
-    // Re-enable Min button
     if (setMinBtn.disabled) {
       setMinBtn.disabled = false;
       setMinBtn.style.background = '#007bff';
+    }
+  }
+  else if (msg.startsWith('HSTART:')) {
+    const val = parseInt(msg.split(':')[1]);
+    if (!isNaN(val)) {
+      const slider = document.getElementById('grip-start-slider');
+      const display = document.getElementById('grip-start-current');
+      slider.value = val;
+      display.textContent = val;
     }
   }
   else if (msg.startsWith('FSR:')) {
@@ -203,7 +220,6 @@ function handleNotifications(event) {
       currentFSR = fsrVal;
       fsrValue.textContent = `FSR: ${currentFSR} Step: ${currentStep}`;
     }
-    // Always re-enable Max button
     if (setMaxBtn.disabled) {
       setMaxBtn.disabled = false;
       setMaxBtn.style.background = '#007bff';
@@ -234,7 +250,9 @@ setMaxBtn.addEventListener('click', () => {
   sendCommand('SET_MAX\n');
 });
 
+// -------------------------
 // SLIDER DISPLAY
+// -------------------------
 [
   ['grip-start-slider','grip-start-current'],
   ['haptic-start-pct','haptic-start-current'],
@@ -244,6 +262,15 @@ setMaxBtn.addEventListener('click', () => {
   const slider = document.getElementById(sliderId);
   const display = document.getElementById(displayId);
   slider.addEventListener('input', () => display.textContent = slider.value);
+});
+
+// -------------------------
+// Haptic Start slider -> CP
+// -------------------------
+const gripStartSlider = document.getElementById('grip-start-slider');
+gripStartSlider.addEventListener('change', () => {
+  if (!isConnected) return;
+  sendCommand(`HSTART:${gripStartSlider.value}\n`);
 });
 </script>
 
