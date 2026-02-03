@@ -4,40 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Paddle Controller</title>
-
 <style>
-body {
-  font-family: Arial;
-  text-align: center;
-  margin: 5px;
-}
-button {
-  width: 150px;
-  height: 30px;
-  font-size: 16px;
-  padding: 5px;
-  cursor: pointer;
-  border-radius: 5px;
-  color: white;
-  border: none;
-  background: #007bff;
-  margin-bottom: 4px;
-}
+body { font-family: Arial; text-align: center; margin: 5px; }
+button { width: 150px; height: 30px; font-size: 16px; padding: 5px; cursor: pointer; border-radius: 5px; color: white; border: none; background: #007bff; margin-bottom: 4px; }
 button:hover { background: #0056b3; }
 button:disabled { background: #ccc; cursor: not-allowed; }
 /* Small buttons */
-.small-button {
-  width: 70px;
-  height: 30px;
-  font-size: 16px;
-  padding: 5px;
-  cursor: pointer;
-  border-radius: 5px;
-  color: white;
-  border: none;
-  background: #007bff;
-  margin-bottom: 4px;
-}
+.small-button { width: 70px; height: 30px; font-size: 16px; padding: 5px; border-radius: 5px; background: #007bff; color: white; border: none; }
 .columns { display: flex; justify-content: center; gap: 20px; margin-top: 5px; }
 .column { display: flex; flex-direction: column; align-items: center; }
 .header-container h1 { margin: 5px 0; font-size: 1.5em; }
@@ -56,7 +29,6 @@ input[type="range"] { writing-mode: bt-lr; -webkit-appearance: slider-vertical; 
 </head>
 
 <body>
-
 <div class="header-container">
   <h1>Paddle Controller</h1>
   <button id="connect-btn">Connect</button>
@@ -92,8 +64,14 @@ input[type="range"] { writing-mode: bt-lr; -webkit-appearance: slider-vertical; 
     </div>
 
     <div class="button-row">
-       <button id="set-min-btn" class="small-button">Set Min</button>
-       <button id="set-max-btn" class="small-button">Set Max</button>
+      <div style="display:flex; flex-direction:column; align-items:center;">
+        <button id="set-min-btn" class="small-button">Set Min</button>
+        <div id="min-fsr-value">--</div>
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:center;">
+        <button id="set-max-btn" class="small-button">Set Max</button>
+        <div id="max-fsr-value">--</div>
+      </div>
     </div>
   </div>
 
@@ -119,22 +97,27 @@ input[type="range"] { writing-mode: bt-lr; -webkit-appearance: slider-vertical; 
 <script>
 let device, server, uartService, txCharacteristic, rxCharacteristic;
 let isConnected = false;
-
 let currentFSR = '--';
 let currentStep = '--';
 
+// Elements
 const connectBtn = document.getElementById('connect-btn');
 const fsrBtn = document.getElementById('fsr-btn');
 const fsrValue = document.getElementById('fsr-value');
 const xangleBtn = document.getElementById('xangle-btn');
 const xangleValue = document.getElementById('xangle-value');
+const gripStartSlider = document.getElementById('grip-start-slider');
+const minFsrValue = document.getElementById('min-fsr-value');
+const maxFsrValue = document.getElementById('max-fsr-value');
+const setMinBtn = document.getElementById('set-min-btn');
+const setMaxBtn = document.getElementById('set-max-btn');
 
 const SERVICE_UUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
 const TX_CHAR_UUID = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
 const RX_CHAR_UUID = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
 
 // -------------------------
-// Connect/Disconnect
+// CONNECT/DISCONNECT
 // -------------------------
 connectBtn.addEventListener('click', async () => {
   if (!isConnected) {
@@ -146,15 +129,19 @@ connectBtn.addEventListener('click', async () => {
       rxCharacteristic = await uartService.getCharacteristic(RX_CHAR_UUID);
       await rxCharacteristic.startNotifications();
       rxCharacteristic.addEventListener('characteristicvaluechanged', handleNotifications);
+
       isConnected = true;
       connectBtn.textContent = 'Disconnect';
       fsrBtn.disabled = false;
       xangleBtn.disabled = false;
 
-      // Request current values from CP
+      // Request initial values from CP
+      sendCommand('GET_HSTART\n');
       sendCommand('GET_FSR\n');
       sendCommand('GET_XANGLE\n');
-      sendCommand('GET_HSTART\n');
+      // Request Step1/Step10 for min/max display
+      sendCommand('SET_MIN\n');  // CP will return STEP1 immediately
+      sendCommand('SET_MAX\n');  // CP will return STEP10 immediately
     } catch (err) {
       console.error(err);
       alert('Failed to connect');
@@ -167,15 +154,14 @@ connectBtn.addEventListener('click', async () => {
     xangleBtn.disabled = true;
     fsrValue.textContent = 'FSR: -- Step: --';
     xangleValue.textContent = 'X Angle: --';
+    minFsrValue.textContent = '--';
+    maxFsrValue.textContent = '--';
   }
 });
 
 // -------------------------
-// TOGGLES
+// SEND COMMAND
 // -------------------------
-fsrBtn.addEventListener('click', () => sendCommand('TOGGLE_FSR\n'));
-xangleBtn.addEventListener('click', () => sendCommand('TOGGLE_XANGLE\n'));
-
 function sendCommand(cmd) {
   if (isConnected && txCharacteristic) {
     txCharacteristic.writeValue(new TextEncoder().encode(cmd)).catch(console.error);
@@ -183,96 +169,86 @@ function sendCommand(cmd) {
 }
 
 // -------------------------
-// BLE RX HANDLER
+// TOGGLE BUTTONS
+// -------------------------
+fsrBtn.addEventListener('click', () => sendCommand('TOGGLE_FSR\n'));
+xangleBtn.addEventListener('click', () => sendCommand('TOGGLE_XANGLE\n'));
+
+// -------------------------
+// HANDLER FOR NOTIFICATIONS
 // -------------------------
 function handleNotifications(event) {
   const msg = new TextDecoder().decode(event.target.value).trim();
   console.log('RX:', msg);
 
-  if (msg.includes('FSR ENABLED')) fsrBtn.textContent = 'Turn Grip Off';
-  else if (msg.includes('FSR DISABLED')) fsrBtn.textContent = 'Turn Grip On';
-  else if (msg.startsWith('STEP:')) {
-    currentStep = parseInt(msg.split(':')[1].trim());
+  if (msg.startsWith('FSR:')) {
+    const val = parseInt(msg.split(':')[1]);
+    currentFSR = val;
     fsrValue.textContent = `FSR: ${currentFSR} Step: ${currentStep}`;
-  } 
-  else if (msg.startsWith('STEP1:')) {
-    currentStep = parseInt(msg.split(':')[1].trim());
-    fsrValue.textContent = `FSR: ${currentFSR} Step: ${currentStep}`;
-    if (setMinBtn.disabled) {
-      setMinBtn.disabled = false;
-      setMinBtn.style.background = '#007bff';
-    }
   }
+  else if (msg.startsWith('STEP:')) {
+    currentStep = parseInt(msg.split(':')[1]);
+    fsrValue.textContent = `FSR: ${currentFSR} Step: ${currentStep}`;
+  }
+else if (msg.startsWith('STEP1:')) {
+    const val = parseInt(msg.split(':')[1]);
+    minFsrValue.textContent = val;       // display under Min button
+}
+
+else if (msg.startsWith('STEP10:')) {
+    const val = parseInt(msg.split(':')[1]);
+    maxFsrValue.textContent = val;       // display under Max button
+}
+
   else if (msg.startsWith('HSTART:')) {
     const val = parseInt(msg.split(':')[1]);
-    if (!isNaN(val)) {
-      const slider = document.getElementById('grip-start-slider');
-      const display = document.getElementById('grip-start-current');
-      slider.value = val;
-      display.textContent = val;
-    }
+    gripStartSlider.value = val;
+    document.getElementById('grip-start-current').textContent = val;
   }
-  else if (msg.startsWith('FSR:')) {
-    const fsrVal = parseInt(msg.split(':')[1].trim());
-    if (!isNaN(currentStep) && fsrVal < 2 * currentStep) {
-      console.log('FSR value ignored: below 2x Step1');
-    } else {
-      currentFSR = fsrVal;
-      fsrValue.textContent = `FSR: ${currentFSR} Step: ${currentStep}`;
-    }
-    if (setMaxBtn.disabled) {
-      setMaxBtn.disabled = false;
-      setMaxBtn.style.background = '#007bff';
-    }
-  }
+  else if (msg.includes('FSR ENABLED')) fsrBtn.textContent = 'Turn Grip Off';
+  else if (msg.includes('FSR DISABLED')) fsrBtn.textContent = 'Turn Grip On';
   else if (msg.includes('XANGLE ENABLED')) xangleBtn.textContent = 'Turn Angle Off';
   else if (msg.includes('XANGLE DISABLED')) xangleBtn.textContent = 'Turn Angle On';
-  else if (msg.startsWith('XANGLE:')) xangleValue.textContent = `X Angle: ${msg.split(':')[1].trim()}`;
+  else if (msg.startsWith('XANGLE:')) xangleValue.textContent = `X Angle: ${msg.split(':')[1]}`;
 }
 
 // -------------------------
-// MIN/MAX BUTTONS
-// -------------------------
-const setMinBtn = document.getElementById('set-min-btn');
-const setMaxBtn = document.getElementById('set-max-btn');
-
-setMinBtn.addEventListener('click', () => {
-  if (!isConnected) return;
-  setMinBtn.disabled = true;
-  setMinBtn.style.background = '#ccc';
-  sendCommand('SET_MIN\n');
-});
-
-setMaxBtn.addEventListener('click', () => {
-  if (!isConnected) return;
-  setMaxBtn.disabled = true;
-  setMaxBtn.style.background = '#ccc';
-  sendCommand('SET_MAX\n');
-});
-
-// -------------------------
-// SLIDER DISPLAY
+// SLIDER DISPLAYS
 // -------------------------
 [
   ['grip-start-slider','grip-start-current'],
   ['haptic-start-pct','haptic-start-current'],
   ['angle-threshold','angle-threshold-current'],
   ['angle-delay','angle-delay-current']
-].forEach(([sliderId, displayId]) => {
-  const slider = document.getElementById(sliderId);
-  const display = document.getElementById(displayId);
+].forEach(([s,d]) => {
+  const slider = document.getElementById(s);
+  const display = document.getElementById(d);
   slider.addEventListener('input', () => display.textContent = slider.value);
 });
 
 // -------------------------
-// Haptic Start slider -> CP
+// SLIDERS -> CP
 // -------------------------
-const gripStartSlider = document.getElementById('grip-start-slider');
 gripStartSlider.addEventListener('change', () => {
   if (!isConnected) return;
   sendCommand(`HSTART:${gripStartSlider.value}\n`);
 });
-</script>
 
+// -------------------------
+// SET MIN/MAX BUTTONS
+// -------------------------
+setMinBtn.addEventListener('click', () => {
+  if (!isConnected) return;
+  setMinBtn.disabled = true;
+  setMinBtn.style.background = '#ccc';
+  sendCommand('SET_MIN\n');
+});
+setMaxBtn.addEventListener('click', () => {
+  if (!isConnected) return;
+  setMaxBtn.disabled = true;
+  setMaxBtn.style.background = '#ccc';
+  sendCommand('SET_MAX\n');
+});
+</script>
 </body>
 </html>
