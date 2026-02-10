@@ -9,20 +9,25 @@
 body {
   font-family: Arial;
   text-align: center;
-  margin: 5px;
+  margin: 2px;                 /* Page edge padding (entire app) */
+}
+
+h1 {
+  margin: 0;                   /* Removes default space above/below title */
+  line-height: 1.1;            /* Tightens vertical height of title text */
 }
 
 button {
   width: 150px;
   height: 30px;
   font-size: 16px;
-  padding: 5px;
+  padding: 5px;                /* Inner space inside button */
   cursor: pointer;
   border-radius: 5px;
   color: white;
   border: none;
   background: #007bff;
-  margin-bottom: 4px;
+  margin-bottom: 4px;          /* Space below each button */
 }
 
 button:hover { background: #0056b3; }
@@ -37,8 +42,8 @@ button:disabled { background: #ccc; cursor: not-allowed; }
 .columns {
   display: flex;
   justify-content: center;
-  gap: 20px;
-  margin-top: 5px;
+  gap: 20px;                   /* Horizontal gap between Grip / Angle columns */
+  margin-top: 2px;             /* Space below header section */
 }
 
 .column {
@@ -51,20 +56,39 @@ button:disabled { background: #ccc; cursor: not-allowed; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
+  gap: 2px;                    /* Space between title and Connect button */
 }
 
 .slider-container {
+  position: relative;           /* Allows absolute positioning of divider */  
   display: flex;
   justify-content: center;
-  gap: 40px;
-  margin-top: 10px;
+  gap: 40px;                   /* Space between left/right slider columns */
+  margin-top: 10px;            /* Space below Grip/Angle section */
+}
+
+.slider-inner {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transform: translateX(-12px);   /* Nudges slider & value left */
+}
+
+.slider-container::before {
+  content: "";
+  position: absolute;
+  top: 1px;                    /* Start below slider labels. Increase, line start lower */
+  bottom: 80px;                /* Stop above Set Min / Max buttons. Increase, line stops higher */
+  left: 50%;                     /* Center of container */
+  width: 3px;                    /* Line thickness */
+  background: #aaa;              /* Grey color */
+  transform: translateX(-50%);   /* Perfect centering */
 }
 
 .slider-column {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 20px;                   /* Vertical spacing between slider boxes */
   align-items: center;
 }
 
@@ -79,13 +103,13 @@ input[type="range"] {
   writing-mode: bt-lr;
   -webkit-appearance: slider-vertical;
   width: 40px;
-  height: 120px;
+  height: 120px;               /* Vertical slider length */
 }
 
 .slider-inner {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 4px;                    /* Space between value number and slider */
 }
 
 .slider-current-value {
@@ -95,29 +119,35 @@ input[type="range"] {
 }
 
 .set-column {
-  margin-top: 10px;
+  margin-top: 6px;             /* Space above Min/Max section */
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
 .set-row {
-  display: flex;              /* side-by-side layout */
-  gap: 10px;                  /* space between buttons */
+  display: flex;               /* Side-by-side Min / Max */
+  gap: 10px;                   /* Space between Min and Max groups */
   justify-content: center;
 }
 
 .set-item {
-  display: flex;              /* stack button + value */
+  display: flex;               /* Stack button + value */
   flex-direction: column;
   align-items: center;
+  gap: 2px;                    /* Space between button and value text */
+}
+
+.set-item div {
+  font-size: 13px;             /* Smaller Min/Max value text */
+  line-height: 1.1;            /* Tightens value text vertical space */
 }
 
 .narrow-button {
-  width: 80px;                /* narrower to fit side-by-side */
+  width: 80px;                 /* Allows Min/Max to sit side-by-side */
 }
-
 </style>
+
 </head>
 
 <body>
@@ -348,7 +378,6 @@ function handleRX(event) {
     }
   });
 }
-
 </script>
 
 </body>
