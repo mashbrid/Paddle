@@ -11,6 +11,7 @@ body {
   text-align: center;
   margin: 5px;
 }
+
 button {
   width: 150px;
   height: 30px;
@@ -23,21 +24,14 @@ button {
   background: #007bff;
   margin-bottom: 4px;
 }
+
 button:hover { background: #0056b3; }
 button:disabled { background: #ccc; cursor: not-allowed; }
 
-/* Small buttons */
 .small-button {
-  width: 70px;
+  width: 90px;
   height: 30px;
-  font-size: 16px;
-  padding: 5px;
-  cursor: pointer;
-  border-radius: 5px;
-  color: white;
-  border: none;
-  background: #007bff;
-  margin-bottom: 4px;
+  font-size: 15px;
 }
 
 .columns {
@@ -53,11 +47,6 @@ button:disabled { background: #ccc; cursor: not-allowed; }
   align-items: center;
 }
 
-.header-container h1 {
-  margin: 5px 0;
-  font-size: 1.5em;
-}
-
 .header-container {
   display: flex;
   flex-direction: column;
@@ -65,7 +54,6 @@ button:disabled { background: #ccc; cursor: not-allowed; }
   gap: 5px;
 }
 
-/* ---- SLIDERS ---- */
 .slider-container {
   display: flex;
   justify-content: center;
@@ -97,7 +85,7 @@ input[type="range"] {
 .slider-inner {
   display: flex;
   align-items: center;
-  gap: 1px;
+  gap: 4px;
 }
 
 .slider-current-value {
@@ -106,16 +94,29 @@ input[type="range"] {
   text-align: right;
 }
 
-/* Set Min/Max buttons row */
-.button-row {
+.set-column {
+  margin-top: 10px;
   display: flex;
-  gap: 10px;
-  margin-top: 1px;
+  flex-direction: column;
+  align-items: center;
 }
 
-.button-row button {
-  flex: 0 0 auto;
+.set-row {
+  display: flex;              /* side-by-side layout */
+  gap: 10px;                  /* space between buttons */
+  justify-content: center;
 }
+
+.set-item {
+  display: flex;              /* stack button + value */
+  flex-direction: column;
+  align-items: center;
+}
+
+.narrow-button {
+  width: 80px;                /* narrower to fit side-by-side */
+}
+
 </style>
 </head>
 
@@ -131,6 +132,7 @@ input[type="range"] {
     <button id="fsr-btn" disabled>Grip Unk</button>
     <div id="fsr-value">FSR: -- Step: --</div>
   </div>
+
   <div class="column">
     <button id="xangle-btn" disabled>Angle Unk</button>
     <div id="xangle-value">X Angle: --</div>
@@ -138,212 +140,215 @@ input[type="range"] {
 </div>
 
 <div class="slider-container">
+  <!-- LEFT COLUMN -->
   <div class="slider-column">
+
     <div class="slider-box">
-      <label for="grip-start-slider">HAPTIC START</label>
+      <label>HAPTIC START</label>
       <div class="slider-inner">
-        <div class="slider-current-value" id="grip-start-current">4</div>
-        <input type="range" id="grip-start-slider" min="2" max="10" step="1" value="4">
+        <div class="slider-current-value" id="hstart-display">--</div>
+        <input type="range" id="hstart-slider" min="2" max="10" step="1" value="4">
       </div>
     </div>
 
     <div class="slider-box">
-      <label for="haptic-start-pct">HAPTIC %</label>
+      <label>HAPTIC %</label>
       <div class="slider-inner">
-        <div class="slider-current-value" id="haptic-start-current">50</div>
-        <input type="range" id="haptic-start-pct" min="0" max="100" step="1" value="50">
+        <div class="slider-current-value" id="haptic-pct-display">50</div>
+        <input type="range" id="haptic-pct-slider" min="0" max="100" step="1" value="50">
       </div>
     </div>
 
-    <div class="button-row">
-      <button id="set-min-btn" class="small-button">Set Min</button>
-      <button id="set-max-btn" class="small-button">Set Max</button>
+    <div class="set-column">
+      <div class="set-row">
+        <div class="set-item">
+          <button id="set-min-btn" class="small-button narrow-button">Set Min</button>
+          <div id="step1-display">Min: --</div>
+        </div>
+
+        <div class="set-item">
+          <button id="set-max-btn" class="small-button narrow-button">Set Max</button>
+          <div id="step10-display">Max: --</div>
+        </div>
+      </div>
     </div>
+
   </div>
 
+  <!-- RIGHT COLUMN -->
   <div class="slider-column">
     <div class="slider-box">
-      <label for="angle-threshold">ANGLE</label>
+      <label>ANGLE</label>
       <div class="slider-inner">
-        <div class="slider-current-value" id="angle-threshold-current">3</div>
-        <input type="range" id="angle-threshold" min="-10" max="10" step="1" value="3">
+        <div class="slider-current-value" id="angle-threshold-display">3</div>
+        <input type="range" id="angle-threshold-slider" min="-10" max="10" step="1" value="3">
       </div>
     </div>
 
     <div class="slider-box">
-      <label for="angle-delay">ANGLE DELAY</label>
+      <label>ANGLE DELAY</label>
       <div class="slider-inner">
-        <div class="slider-current-value" id="angle-delay-current">0.8</div>
-        <input type="range" id="angle-delay" min="0" max="5" step="0.1" value="0.8">
+        <div class="slider-current-value" id="angle-delay-display">0.8</div>
+        <input type="range" id="angle-delay-slider" min="0" max="5" step="0.1" value="0.8">
       </div>
     </div>
   </div>
 </div>
 
 <script>
-/* -------------------------
-   BLE STATE
-------------------------- */
 let device, server, uartService, txCharacteristic, rxCharacteristic;
 let isConnected = false;
+let bleBusy = false;
 
 let currentFSR = '--';
 let currentStep = '--';
 
-/* -------------------------
-   UI ELEMENTS
-------------------------- */
 const connectBtn = document.getElementById('connect-btn');
 const fsrBtn = document.getElementById('fsr-btn');
-const fsrValue = document.getElementById('fsr-value');
 const xangleBtn = document.getElementById('xangle-btn');
+const fsrValue = document.getElementById('fsr-value');
 const xangleValue = document.getElementById('xangle-value');
 
-/* Nordic UART UUIDs */
+const setMinBtn = document.getElementById('set-min-btn');
+const setMaxBtn = document.getElementById('set-max-btn');
+const step1Display = document.getElementById('step1-display');
+const step10Display = document.getElementById('step10-display');
+
+const hstartSlider = document.getElementById('hstart-slider');
+const hstartDisplay = document.getElementById('hstart-display');
+
 const SERVICE_UUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
 const TX_CHAR_UUID = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
 const RX_CHAR_UUID = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
 
-/* -------------------------
-   CONNECT / DISCONNECT
-------------------------- */
+async function sendCommand(cmd) {
+  if (!isConnected || !txCharacteristic || bleBusy) return;
+  try {
+    bleBusy = true;
+    await txCharacteristic.writeValue(
+      new TextEncoder().encode(cmd)
+    );
+  } catch (err) {
+    console.error('BLE write failed:', err);
+  } finally {
+    bleBusy = false;
+  }
+}
+
 connectBtn.addEventListener('click', async () => {
   if (!isConnected) {
-    try {
-      device = await navigator.bluetooth.requestDevice({
-        filters: [{ services: [SERVICE_UUID] }]
-      });
+    device = await navigator.bluetooth.requestDevice({
+      filters: [{ services: [SERVICE_UUID] }]
+    });
 
-      server = await device.gatt.connect();
-      uartService = await server.getPrimaryService(SERVICE_UUID);
-      txCharacteristic = await uartService.getCharacteristic(TX_CHAR_UUID);
-      rxCharacteristic = await uartService.getCharacteristic(RX_CHAR_UUID);
+    server = await device.gatt.connect();
+    uartService = await server.getPrimaryService(SERVICE_UUID);
+    txCharacteristic = await uartService.getCharacteristic(TX_CHAR_UUID);
+    rxCharacteristic = await uartService.getCharacteristic(RX_CHAR_UUID);
 
-      await rxCharacteristic.startNotifications();
-      rxCharacteristic.addEventListener(
-        'characteristicvaluechanged',
-        handleNotifications
-      );
+    await rxCharacteristic.startNotifications();
+    rxCharacteristic.addEventListener('characteristicvaluechanged', handleRX);
 
-      isConnected = true;
-      connectBtn.textContent = 'Disconnect';
-      fsrBtn.disabled = false;
-      xangleBtn.disabled = false;
+    isConnected = true;
+    connectBtn.textContent = 'Disconnect';
+    fsrBtn.disabled = false;
+    xangleBtn.disabled = false;
 
-      /* Explicit state requests (authoritative) */
-      sendCommand('GET_FSR_STATE\n');
+    /* AUTHORITATIVE STATE REQUESTS */
+    await sendCommand('GET_FSR_STATE\n');     // Request Grip on/off
+    await sendCommand('GET_XANGLE_STATE\n');  // Request XAngle on/off
+    await sendCommand('GET_STEP1\n');         // Request Step 1 (min)
+    await sendCommand('GET_STEP10\n');        // Request Step 10 (max)
+    await sendCommand('GET_HSTART\n');        // Request haptic start value
 
-      setTimeout(() => {
-        sendCommand('GET_XANGLE_STATE\n');
-      }, 50);
-
-    } catch (err) {
-      console.error(err);
-      alert('Failed to connect');
-    }
   } else {
-    if (device?.gatt?.connected) device.gatt.disconnect();
+    device.gatt.disconnect();
     isConnected = false;
     connectBtn.textContent = 'Connect';
-    fsrBtn.disabled = true;
-    xangleBtn.disabled = true;
-    fsrBtn.textContent = 'Grip Unk';
-    xangleBtn.textContent = 'Angle Unk';
-    fsrValue.textContent = 'FSR: -- Step: --';
-    xangleValue.textContent = 'X Angle: --';
   }
 });
 
-/* -------------------------
-   TOGGLES
-------------------------- */
-fsrBtn.addEventListener('click', () => sendCommand('TOGGLE_FSR\n'));
-xangleBtn.addEventListener('click', () => sendCommand('TOGGLE_XANGLE\n'));
+fsrBtn.addEventListener('click', async () => {
+  await sendCommand('TOGGLE_FSR\n');
+});
 
-function sendCommand(cmd) {
-  if (isConnected && txCharacteristic) {
-    txCharacteristic.writeValue(
-      new TextEncoder().encode(cmd)
-    ).catch(console.error);
-  }
-}
+xangleBtn.addEventListener('click', async () => {
+  await sendCommand('TOGGLE_XANGLE\n');
+});
 
-/* -------------------------
-   BLE RX HANDLER (LINE-BASED)
-------------------------- */
-function handleNotifications(event) {
-  const text = new TextDecoder().decode(event.target.value);
-  const lines = text.split('\n');
-
-  lines.forEach(rawLine => {
-    const msg = rawLine.trim();
-    if (!msg) return;
-
-if (
-  msg.includes('ERROR') ||
-  msg.includes('STATE') ||
-  msg.includes('FSR ENABLED') ||
-  msg.includes('FSR DISABLED') ||
-  msg.includes('XANGLE ENABLED') ||
-  msg.includes('XANGLE DISABLED')
-) {
-  console.log('RX:', msg);
-}
-
-
-    if (msg === 'FSR ENABLED') fsrBtn.textContent = 'Grip On';
-    else if (msg === 'FSR DISABLED') fsrBtn.textContent = 'Grip Off';
-    else if (msg === 'XANGLE ENABLED') xangleBtn.textContent = 'Angle On';
-    else if (msg === 'XANGLE DISABLED') xangleBtn.textContent = 'Angle Off';
-    else if (msg.startsWith('STEP:')) {
-      currentStep = parseInt(msg.split(':')[1].trim());
-      fsrValue.textContent = `FSR: ${currentFSR} Step: ${currentStep}`;
-    }
-    else if (msg.startsWith('FSR:')) {
-      currentFSR = parseInt(msg.split(':')[1].trim());
-      fsrValue.textContent = `FSR: ${currentFSR} Step: ${currentStep}`;
-    }
-    else if (msg.startsWith('XANGLE:')) {
-      xangleValue.textContent = `X Angle: ${msg.split(':')[1].trim()}`;
-    }
-  });
-}
-
-/* -------------------------
-   MIN / MAX BUTTONS
-------------------------- */
-const setMinBtn = document.getElementById('set-min-btn');
-const setMaxBtn = document.getElementById('set-max-btn');
-
-setMinBtn.addEventListener('click', () => {
-  if (!isConnected) return;
+setMinBtn.addEventListener('click', async () => {
   setMinBtn.disabled = true;
-  setMinBtn.style.background = '#ccc';
-  sendCommand('SET_MIN\n');
+  await sendCommand('SET_MIN\n');
 });
 
-setMaxBtn.addEventListener('click', () => {
-  if (!isConnected) return;
+setMaxBtn.addEventListener('click', async () => {
   setMaxBtn.disabled = true;
-  setMaxBtn.style.background = '#ccc';
-  sendCommand('SET_MAX\n');
+  await sendCommand('SET_MAX\n');
 });
 
-/* -------------------------
-   SLIDER DISPLAY
-------------------------- */
-[
-  ['grip-start-slider','grip-start-current'],
-  ['haptic-start-pct','haptic-start-current'],
-  ['angle-threshold','angle-threshold-current'],
-  ['angle-delay','angle-delay-current']
-].forEach(([sliderId, displayId]) => {
-  const slider = document.getElementById(sliderId);
-  const display = document.getElementById(displayId);
-  slider.addEventListener('input', () => {
-    display.textContent = slider.value;
-  });
+hstartSlider.addEventListener('input', () => {
+  hstartDisplay.textContent = hstartSlider.value;
 });
+
+hstartSlider.addEventListener('change', async () => {
+  await sendCommand(`HSTART:${hstartSlider.value}\n`);
+});
+
+function handleRX(event) {
+  const text = new TextDecoder().decode(event.target.value); // Decode BLE bytes to text
+
+  text.split('\n').forEach(msg => {                           // Handle multiple messages per packet
+    msg = msg.trim();                                         // Clean up whitespace
+    if (!msg) return;                                         // Ignore empty lines
+
+    console.log('RX:', msg);                                  // log every message received
+
+     // message handling happens here
+
+    if (msg === 'FSR ENABLED')
+      fsrBtn.textContent = 'Grip On';                          // Update FSR button state
+
+    else if (msg === 'FSR DISABLED')
+      fsrBtn.textContent = 'Grip Off';                         // Update FSR button state
+
+    else if (msg === 'XANGLE ENABLED')
+      xangleBtn.textContent = 'Angle On';                      // Update X-angle button state
+
+    else if (msg === 'XANGLE DISABLED')
+      xangleBtn.textContent = 'Angle Off';                     // Update X-angle button state
+
+    else if (msg.startsWith('FSR:')) {
+      currentFSR = msg.split(':')[1];                          // Store current FSR value
+      fsrValue.textContent = `FSR: ${currentFSR} Step: ${currentStep}`; // Refresh display
+    }
+
+    else if (msg.startsWith('STEP:')) {
+      currentStep = msg.split(':')[1];                         // Store current Step value
+      fsrValue.textContent = `FSR: ${currentFSR} Step: ${currentStep}`; // Refresh display
+    }
+
+    else if (msg.startsWith('XANGLE:')) {
+      xangleValue.textContent = `X Angle: ${msg.split(':')[1]}`; // Update X-angle display
+    }
+
+    else if (msg.startsWith('STEP1:')) {
+      step1Display.textContent = `Min: ${msg.split(':')[1]}`;  // Show Step 1 calibration
+      setMinBtn.disabled = false;                               // Enable SET MIN button
+    }
+
+    else if (msg.startsWith('STEP10:')) {
+      step10Display.textContent = `Max: ${msg.split(':')[1]}`; // Show Step 10 calibration
+      setMaxBtn.disabled = false;                               // Enable SET MAX button
+    }
+
+    else if (msg.startsWith('HSTART:')) {
+      const val = msg.split(':')[1];                            // Extract haptic start step
+      hstartSlider.value = val;                                 // Update slider
+      hstartDisplay.textContent = val;                          // Update numeric display
+    }
+  });
+}
+
 </script>
 
 </body>
